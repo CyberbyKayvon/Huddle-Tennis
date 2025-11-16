@@ -1,0 +1,23 @@
+UPDATE ORDER FOR GOLF PAGES:
+=============================
+1. BaseGolfProfile.js - Base class with shared methods
+2. profile-home.js - Main landing page
+3. stats-dashboard.js - Statistics display
+4. tournament-history.js - Tournament results
+5. academic-info.js - Academic information
+6. contact.js - Contact form for coaches
+7. schedule.js - Upcoming tournaments
+8. highlights.js - Key achievements
+9. achievements.js - Awards and honors
+
+PREMIUM PAGES:
+10. video-gallery.js - Video showcase
+11. swing-analysis.js - Technical analysis
+12. coach-portal.js - Private coach area
+13. recruitment-tracker.js - College interest tracker
+14. live-scoring.js - Live tournament updates
+15. advanced-stats.js - Detailed analytics
+16. performance-charts.js - Visual data
+17. college-matches.js - College fit analysis
+18. training-log.js - Practice records
+19. media-kit.js - Downloadable resources

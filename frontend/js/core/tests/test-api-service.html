@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: API Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 10px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .test-group {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-group h3 {
+            margin-top: 0;
+            color: #6366f1;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        .auth-status {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .endpoint-test {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .endpoint-test input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .method-select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 API Service Test</h1>
+        
+        <div class="auth-status">
+            <h3>Authentication Status</h3>
+            <div id="auth-status"></div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="runBasicTests()">Run Basic Tests</button>
+            <button onclick="testRealEndpoint()">Test Real Endpoint</button>
+            <button onclick="setTestToken()">Set Test Token</button>
+            <button onclick="clearTestToken()">Clear Token</button>
+        </div>
+        
+        <div class="test-group">
+            <h3>Manual Endpoint Test</h3>
+            <div class="endpoint-test">
+                <select class="method-select" id="method">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                <input type="text" id="endpoint" placeholder="/api/posts/feed" value="/api/posts/feed">
+                <button onclick="testCustomEndpoint()">Test</button>
+            </div>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script type="module">
+        import { apiService } from '/js/core/services/api-service.js';
+        import { storageService } from '/js/core/services/storage-service.js';
+        import { API_ENDPOINTS } from '/js/core/config/api-endpoints.js';
+        
+        // Make available globally for button clicks
+        window.apiService = apiService;
+        window.storageService = storageService;
+        window.API_ENDPOINTS = API_ENDPOINTS;
+        
+        const resultsDiv = document.getElementById('test-results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        function updateAuthStatus() {
+            const statusDiv = document.getElementById('auth-status');
+            const token = apiService.getToken();
+            const user = apiService.getCurrentUser();
+            const isAuth = apiService.isAuthenticated();
+            
+            statusDiv.innerHTML = `
+                <p><strong>Authenticated:</strong> ${isAuth ? '✅ Yes' : '❌ No'}</p>
+                <p><strong>Token:</strong> ${token ? `${token.substring(0, 20)}...` : 'None'}</p>
+                <p><strong>User:</strong> ${user ? JSON.stringify(user).substring(0, 50) + '...' : 'None'}</p>
+                <p><strong>Base URL:</strong> ${apiService.baseURL}</p>
+            `;
+        }
+        
+        window.runBasicTests = async function() {
+            clearResults();
+            addResult('<h3>Running Basic API Service Tests...</h3>', 'info');
+            
+            // Test 1: Configuration
+            const configGroup = document.createElement('div');
+            configGroup.className = 'test-group';
+            configGroup.innerHTML = '<h3>1. Configuration Tests</h3>';
+            
+            // Test base URL
+            if (apiService.baseURL === window.location.origin) {
+                configGroup.innerHTML += '<div class="test-result success">✅ Base URL correctly set</div>';
+            } else {
+                configGroup.innerHTML += '<div class="test-result error">❌ Base URL incorrect</div>';
+            }
+            
+            // Test timeout setting
+            if (apiService.timeout === 30000) {
+                configGroup.innerHTML += '<div class="test-result success">✅ Timeout configured (30s)</div>';
+            } else {
+                configGroup.innerHTML += '<div class="test-result error">❌ Timeout not configured</div>';
+            }
+            
+            resultsDiv.appendChild(configGroup);
+            
+            // Test 2: Authentication
+            const authGroup = document.createElement('div');
+            authGroup.className = 'test-group';
+            authGroup.innerHTML = '<h3>2. Authentication Tests</h3>';
+            
+            // Test token methods
+            const testToken = 'test-token-123';
+            apiService.setAuthToken(testToken);
+            const retrievedToken = apiService.getToken();
+            
+            if (retrievedToken === testToken) {
+                authGroup.innerHTML += '<div class="test-result success">✅ Token storage/retrieval works</div>';
+            } else {
+                authGroup.innerHTML += '<div class="test-result error">❌ Token storage/retrieval failed</div>';
+            }
+            
+            // Test user storage
+            const testUser = { id: 1, username: 'testuser' };
+            apiService.setCurrentUser(testUser);
+            const retrievedUser = apiService.getCurrentUser();
+            
+            if (retrievedUser && retrievedUser.username === 'testuser') {
+                authGroup.innerHTML += '<div class="test-result success">✅ User storage works</div>';
+            } else {
+                authGroup.innerHTML += '<div class="test-result error">❌ User storage failed</div>';
+            }
+            
+            // Test authentication check
+            if (apiService.isAuthenticated()) {
+                authGroup.innerHTML += '<div class="test-result success">✅ Authentication check works</div>';
+            } else {
+                authGroup.innerHTML += '<div class="test-result error">❌ Authentication check failed</div>';
+            }
+            
+            resultsDiv.appendChild(authGroup);
+            
+            // Test 3: URL Building
+            const urlGroup = document.createElement('div');
+            urlGroup.className = 'test-group';
+            urlGroup.innerHTML = '<h3>3. URL Building Tests</h3>';
+            
+            // Test with query parameters
+            const endpointWithParams = '/api/test';
+            const params = { page: 1, limit: 10 };
+            
+            urlGroup.innerHTML += `<div class="test-result info">Query params test: ${endpointWithParams} with ${JSON.stringify(params)}</div>`;
+            
+            resultsDiv.appendChild(urlGroup);
+            
+            // Clean up test data
+            storageService.remove('token');
+            storageService.remove('authToken');
+            storageService.remove('user');
+            
+            updateAuthStatus();
+        }
+        
+        window.testRealEndpoint = async function() {
+            clearResults();
+            addResult('<h3>Testing Real Endpoint...</h3>', 'info');
+            
+            try {
+                // Try to fetch posts feed (might fail if not authenticated)
+                addResult('Attempting to fetch /api/posts/feed...', 'info');
+                
+                const response = await apiService.get(API_ENDPOINTS.POSTS.FEED);
+                
+                addResult(`✅ Success! Got response: ${JSON.stringify(response).substring(0, 100)}...`, 'success');
+            } catch (error) {
+                if (error.message.includes('Authentication')) {
+                    addResult(`⚠️ Expected auth error: ${error.message}`, 'warning');
+                } else {
+                    addResult(`❌ Error: ${error.message}`, 'error');
+                }
+            }
+            
+            // Try ESPN API (should work without auth)
+            try {
+                addResult('Testing ESPN API (external)...', 'info');
+                const espnResponse = await apiService.get(API_ENDPOINTS.EXTERNAL.ESPN_NFL);
+                
+                if (espnResponse) {
+                    addResult('✅ ESPN API works! Got scores data', 'success');
+                }
+            } catch (error) {
+                addResult(`ESPN API error: ${error.message}`, 'warning');
+            }
+        }
+        
+        window.testCustomEndpoint = async function() {
+            const endpoint = document.getElementById('endpoint').value;
+            const method = document.getElementById('method').value;
+            
+            clearResults();
+            addResult(`<h3>Testing ${method} ${endpoint}</h3>`, 'info');
+            
+            try {
+                let response;
+                switch(method) {
+                    case 'GET':
+                        response = await apiService.get(endpoint);
+                        break;
+                    case 'POST':
+                        response = await apiService.post(endpoint, { test: true });
+                        break;
+                    case 'PUT':
+                        response = await apiService.put(endpoint, { test: true });
+                        break;
+                    case 'DELETE':
+                        response = await apiService.delete(endpoint);
+                        break;
+                }
+                
+                addResult(`✅ Success: ${JSON.stringify(response).substring(0, 200)}...`, 'success');
+            } catch (error) {
+                addResult(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        window.setTestToken = function() {
+            const testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.token';
+            apiService.setAuthToken(testToken);
+            apiService.setCurrentUser({ id: 1, username: 'testuser', email: 'test@huddle.com' });
+            addResult('Test token set!', 'success');
+            updateAuthStatus();
+        }
+        
+        window.clearTestToken = function() {
+            storageService.remove('token');
+            storageService.remove('authToken');
+            storageService.remove('user');
+            addResult('Token cleared!', 'warning');
+            updateAuthStatus();
+        }
+        
+        // Initial status update
+        updateAuthStatus();
+        
+        // Auto-run basic tests
+        runBasicTests();
+    </script>
+</body>
+</html>

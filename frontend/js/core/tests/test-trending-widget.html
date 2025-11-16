@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Trending Widget</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #6366f1;
+        }
+        
+        /* Trending widget styles */
+        #trending-container {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .trending-item {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .trending-item:hover {
+            background: #f3f4f6;
+            transform: translateX(5px);
+        }
+        
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+        
+        .trending-category {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .trending-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .trending-stats {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .trending-description {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* Mock feed for testing */
+        .feed-posts {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 200px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+        
+        /* Test controls */
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6366f1;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="test-container">
+        <h1>📈 Trending Widget Test</h1>
+        
+        <div class="test-section">
+            <h3>Component Status</h3>
+            <div id="component-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Live Trending Widget</h3>
+            <div id="trending-container">
+                <!-- Widget will render here -->
+                <div style="text-align: center; padding: 20px; color: #6b7280;">
+                    Loading trending topics...
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Search Test</h3>
+            <input type="text" class="search-input" placeholder="Search hashtags..." />
+            <div class="feed-posts">
+                <p style="color: #6b7280;">Search results will appear here...</p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Controls</h3>
+            <div class="test-controls">
+                <button onclick="loadTrendingData()">Load Trending</button>
+                <button onclick="loadFallbackData()">Show Fallback</button>
+                <button onclick="testSearch()">Test Search</button>
+                <button onclick="testHashtagClick()">Test Hashtag Click</button>
+                <button onclick="updateStats()">Update Stats</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="trending-count">0</div>
+                    <div class="stat-label">Trending Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="api-calls">0</div>
+                    <div class="stat-label">API Calls</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="last-update">Never</div>
+                    <div class="stat-label">Last Update</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Results</h3>
+            <div id="test-results"></div>
+            <button onclick="runAllTests()" style="margin-top: 15px;">Run All Tests</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { trendingWidget } from '/js/components/trending-widget.js';
+        import { apiService } from '/js/core/services/api-service.js';
+        import { API_ENDPOINTS } from '/js/core/config/api-endpoints.js';
+        
+        // Make available globally
+        window.trendingWidget = trendingWidget;
+        
+        const resultsDiv = document.getElementById('test-results');
+        let apiCallCount = 0;
+        
+        // Mock trending data
+        const mockTrendingData = {
+            success: true,
+            trending: [
+                {
+                    category: 'NFL • Live',
+                    title: '#ChiefsKingdom',
+                    stats: '52.3K posts',
+                    shortDescription: 'Chiefs dominating in the playoffs'
+                },
+                {
+                    category: 'NBA • Trending',
+                    title: '#LakeShow',
+                    stats: '38.1K posts',
+                    shortDescription: 'Lakers on a winning streak'
+                },
+                {
+                    category: 'Betting • Hot',
+                    title: '#LockOfTheWeek',
+                    stats: '15.7K predictions',
+                    shortDescription: 'Top picks for Sunday'
+                },
+                {
+                    category: 'MLB • Rising',
+                    title: '#SpringTraining',
+                    stats: '8.9K posts',
+                    shortDescription: 'Teams preparing for 2025 season'
+                },
+                {
+                    category: 'NHL • Trending',
+                    title: '#StanleyCup',
+                    stats: '12.4K posts',
+                    shortDescription: 'Playoff race heating up'
+                }
+            ],
+            lastUpdate: new Date().toISOString()
+        };
+        
+        const mockHashtagData = {
+            success: true,
+            hashtag: '#ChiefsKingdom',
+            count: 52300,
+            posts: [
+                {
+                    userId: {
+                        username: 'sportsfan123',
+                        displayName: 'Sports Fan'
+                    },
+                    message: 'Chiefs looking unstoppable! #ChiefsKingdom 🏈',
+                    createdAt: new Date(Date.now() - 5 * 60000).toISOString()
+                },
+                {
+                    userId: {
+                        username: 'bettor99',
+                        displayName: 'Pro Bettor'
+                    },
+                    message: 'Taking Chiefs -3.5 all day #ChiefsKingdom #LockOfTheWeek',
+                    createdAt: new Date(Date.now() - 15 * 60000).toISOString()
+                }
+            ]
+        };
+        
+        // Mock API responses
+        const originalGet = apiService.get;
+        apiService.get = async function(endpoint) {
+            apiCallCount++;
+            document.getElementById('api-calls').textContent = apiCallCount;
+            
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            if (endpoint === API_ENDPOINTS.TRENDING.LIVE) {
+                return mockTrendingData;
+            }
+            if (endpoint.includes('/api/trending/hashtag/')) {
+                return mockHashtagData;
+            }
+            
+            return originalGet.call(this, endpoint);
+        };
+        
+        function updateComponentStatus() {
+            const statusDiv = document.getElementById('component-status');
+            const isLoaded = typeof trendingWidget !== 'undefined';
+            
+            statusDiv.innerHTML = `
+                <p>✅ Component Loaded: ${isLoaded}</p>
+                <p>Container Found: ${trendingWidget.container ? '✅ Yes' : '❌ No'}</p>
+                <p>Update Interval: ${trendingWidget.updateInterval ? '✅ Active (5 min)' : '⏸️ Not running'}</p>
+                <p>Methods Available: 
+                    ${typeof trendingWidget?.loadTrending === 'function' ? '✅' : '❌'} loadTrending,
+                    ${typeof trendingWidget?.searchHashtag === 'function' ? '✅' : '❌'} searchHashtag,
+                    ${typeof trendingWidget?.renderTrending === 'function' ? '✅' : '❌'} renderTrending
+                </p>
+            `;
+        }
+        
+        window.loadTrendingData = async function() {
+            addResult('Loading trending data...', 'info');
+            await trendingWidget.loadTrending();
+            addResult('✅ Trending data loaded', 'success');
+            updateStats();
+        }
+        
+        window.loadFallbackData = function() {
+            addResult('Showing fallback data...', 'info');
+            trendingWidget.renderFallback();
+            addResult('✅ Fallback data displayed', 'success');
+        }
+        
+        window.testSearch = async function() {
+            const hashtag = '#ChiefsKingdom';
+            addResult(`Testing search for ${hashtag}...`, 'info');
+            await trendingWidget.showHashtagResults(hashtag);
+            addResult('✅ Search completed', 'success');
+        }
+        
+        window.testHashtagClick = function() {
+            addResult('Testing hashtag click...', 'info');
+            
+            // Simulate clicking first trending item
+            const firstItem = document.querySelector('.trending-item');
+            if (firstItem) {
+                firstItem.click();
+                addResult('✅ Hashtag click handled', 'success');
+            } else {
+                addResult('❌ No trending items to click', 'error');
+            }
+        }
+        
+        window.updateStats = function() {
+            const items = document.querySelectorAll('.trending-item');
+            document.getElementById('trending-count').textContent = items.length;
+            
+            if (trendingWidget.lastUpdate) {
+                const timeAgo = trendingWidget.getTimeAgo(trendingWidget.lastUpdate);
+                document.getElementById('last-update').textContent = timeAgo;
+            }
+        }
+        
+        window.runAllTests = async function() {
+            resultsDiv.innerHTML = '';
+            addResult('<h4>Running All Tests...</h4>', 'info');
+            
+            // Test 1: Component loaded
+            if (typeof trendingWidget !== 'undefined') {
+                addResult('✅ Component loaded successfully', 'success');
+            } else {
+                addResult('❌ Component not loaded', 'error');
+                return;
+            }
+            
+            // Test 2: Container exists
+            if (trendingWidget.container) {
+                addResult('✅ Container found', 'success');
+            } else {
+                addResult('❌ Container not found', 'error');
+            }
+            
+            // Test 3: Load trending data
+            await trendingWidget.loadTrending();
+            const items = document.querySelectorAll('.trending-item');
+            if (items.length > 0) {
+                addResult(`✅ Loaded ${items.length} trending items`, 'success');
+            } else {
+                addResult('❌ No trending items loaded', 'error');
+            }
+            
+            // Test 4: Time ago function
+            const testDate = new Date(Date.now() - 5 * 60000); // 5 minutes ago
+            const timeAgo = trendingWidget.getTimeAgo(testDate);
+            if (timeAgo === '5m ago') {
+                addResult('✅ Time ago function works', 'success');
+            } else {
+                addResult(`⚠️ Time ago returned: ${timeAgo}`, 'warning');
+            }
+            
+            // Test 5: Search functionality
+            await trendingWidget.showHashtagResults('#test');
+            const feedPosts = document.querySelector('.feed-posts');
+            if (feedPosts && feedPosts.innerHTML.includes('posts')) {
+                addResult('✅ Search functionality works', 'success');
+            } else {
+                addResult('❌ Search functionality failed', 'error');
+            }
+            
+            // Test 6: Fallback rendering
+            trendingWidget.renderFallback();
+            const fallbackItems = document.querySelectorAll('.trending-item');
+            if (fallbackItems.length === 3) {
+                addResult('✅ Fallback rendering works', 'success');
+            } else {
+                addResult('❌ Fallback rendering failed', 'error');
+            }
+            
+            // Test 7: XSS prevention
+            const maliciousData = {
+                success: true,
+                trending: [{
+                    category: '<' + 'script>alert("XSS")<' + '/script>',
+                    title: '<img src=x onerror="alert(1)">',
+                    stats: '1K posts',
+                    shortDescription: '<' + 'script>alert("desc")<' + '/script>'
+                }],
+                lastUpdate: new Date().toISOString()
+            };
+            
+            trendingWidget.renderTrending(maliciousData.trending);
+            const container = document.getElementById('trending-container');
+            if (!container.innerHTML.includes('script>') && !container.innerHTML.includes('onerror')) {
+                addResult('✅ XSS prevention working', 'success');
+            } else {
+                addResult('❌ XSS vulnerability detected', 'error');
+            }
+            
+            // Restore normal data
+            await trendingWidget.loadTrending();
+            
+            addResult('<h4>All tests complete!</h4>', 'info');
+            updateStats();
+        }
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        // Initialize
+        updateComponentStatus();
+        
+        // Initialize widget
+        setTimeout(() => {
+            trendingWidget.init();
+            updateStats();
+        }, 500);
+    </script>
+</body>
+</html>

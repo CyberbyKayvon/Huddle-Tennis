@@ -1,0 +1,37 @@
+:root {
+    /* Modern Dark Theme Colors */
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #111118;
+    --bg-tertiary: #1a1a22;
+    --surface: rgba(255, 255, 255, 0.03);
+    --surface-hover: rgba(255, 255, 255, 0.06);
+    --glass: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.08);
+    
+    /* Neon Accents */
+    --accent: #00ff88;
+    --accent-2: #ff00ff;
+    --accent-3: #00ffff;
+    
+    /* Keep existing colors for compatibility */
+    --primary: var(--accent);
+    --primary-dark: #00cc6a;
+    --danger: #ff3366;
+    --warning: #ffaa00;
+    --success: #00ff88;
+    --gold: #FFD700;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--accent) 0%, #00cc6a 100%);
+    --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--accent-3) 100%);
+    --gradient-neon: linear-gradient(135deg, var(--accent-2) 0%, var(--accent-3) 100%);
+    
+    /* Alpha variants */
+    --primary-alpha: rgba(0, 255, 136, 0.1);
+    --gold-alpha: rgba(255, 215, 0, 0.1);
+    
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --text-muted: rgba(255, 255, 255, 0.5);
+}

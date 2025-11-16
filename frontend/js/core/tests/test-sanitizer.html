@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: XSS Sanitizer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 10px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        .test-group {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-group h3 {
+            margin-top: 0;
+            color: #6366f1;
+        }
+        .xss-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .output-box {
+            padding: 15px;
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            min-height: 50px;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        .danger-button {
+            background: #dc3545;
+        }
+        .danger-button:hover {
+            background: #c82333;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .comparison-box {
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .unsafe {
+            background: #fee2e2;
+            border: 2px solid #dc3545;
+        }
+        .safe {
+            background: #d1fae5;
+            border: 2px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🛡️ XSS Sanitizer Test</h1>
+        
+        <div class="test-group">
+            <h3>⚠️ Live XSS Testing - Try to Inject Scripts!</h3>
+            <p>Enter malicious code below and see how the sanitizer prevents XSS attacks:</p>
+            
+            <textarea class="xss-input" id="userInput" rows="4" placeholder='Try entering: <script>alert("XSS")</script> or <img src=x onerror="alert(1)">'><script>alert("XSS Attack!")</script></textarea>
+            
+            <div class="button-group">
+                <button onclick="testSanitized()">✅ Test WITH Sanitizer (Safe)</button>
+                <button class="danger-button" onclick="testUnsafe()">⚠️ Test WITHOUT Sanitizer (Dangerous - Blocked)</button>
+            </div>
+            
+            <div class="comparison">
+                <div class="comparison-box safe">
+                    <h4>✅ Sanitized Output (Safe)</h4>
+                    <div id="safeOutput" class="output-box"></div>
+                </div>
+                <div class="comparison-box unsafe">
+                    <h4>❌ Unsanitized Output (Would be dangerous)</h4>
+                    <div id="unsafeOutput" class="output-box"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="runAllTests()">Run Automated Tests</button>
+            <button onclick="testCommonXSS()">Test Common XSS Attacks</button>
+            <button onclick="clearAll()">Clear All</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script type="module">
+        import { sanitizer, sanitize, sanitizeText, sanitizeURL } from '/js/core/utils/sanitizer.js';
+        
+        // Make available globally
+        window.sanitizer = sanitizer;
+        window.sanitize = sanitize;
+        
+        const resultsDiv = document.getElementById('test-results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        // Test with sanitizer (safe)
+        window.testSanitized = function() {
+            const input = document.getElementById('userInput').value;
+            const safeOutput = document.getElementById('safeOutput');
+            
+            // Detect if XSS attempt
+            if (sanitizer.detectXSS(input)) {
+                addResult('🛡️ XSS attempt detected and blocked!', 'warning');
+            }
+            
+            // Sanitize and display
+            const cleaned = sanitizer.clean(input);
+            safeOutput.innerHTML = cleaned;
+            
+            addResult(`✅ Sanitized output: ${cleaned}`, 'success');
+        }
+        
+        // Test without sanitizer (for demonstration - actually still safe)
+        window.testUnsafe = function() {
+            const input = document.getElementById('userInput').value;
+            const unsafeOutput = document.getElementById('unsafeOutput');
+            
+            // We'll show what WOULD happen, but still use textContent for safety
+            unsafeOutput.textContent = input;
+            
+            addResult(`❌ Without sanitizer, this HTML would be injected: ${input}`, 'error');
+            addResult('⚠️ In real scenario, this could execute malicious scripts!', 'warning');
+        }
+        
+        // Test common XSS attacks
+        window.testCommonXSS = function() {
+            clearResults();
+            addResult('<h3>Testing Common XSS Attack Vectors</h3>', 'info');
+            
+            const xssVectors = [
+                {
+                    name: 'Script Tag',
+                    input: '<' + 'script>alert("XSS")<' + '/script>',
+                    expected: ''
+                },
+                {
+                    name: 'Image Onerror',
+                    input: '<img src=x onerror="alert(1)">',
+                    expected: '<img src="x">'
+                },
+                {
+                    name: 'JavaScript URL',
+                    input: '<a href="javascript:alert(1)">Click</a>',
+                    expected: '<a href="#">Click</a>'
+                },
+                {
+                    name: 'Event Handler',
+                    input: '<div onclick="alert(1)">Click me</div>',
+                    expected: '<div>Click me</div>'
+                },
+                {
+                    name: 'Data URI',
+                    input: '<a href="data:text/html,<' + 'script>alert(1)<' + '/script>">Link</a>',
+                    expected: '<a href="#">Link</a>'
+                },
+                {
+                    name: 'SVG Attack',
+                    input: '<svg onload="alert(1)">',
+                    expected: ''
+                },
+                {
+                    name: 'Style Expression',
+                    input: '<div style="background:expression(alert(1))">Test</div>',
+                    expected: '<div>Test</div>'
+                },
+                {
+                    name: 'HTML Entity Decode',
+                    input: '&lt;script&gt;alert(1)&lt;/script&gt;',
+                    expected: '&lt;script&gt;alert(1)&lt;/script&gt;'
+                }
+            ];
+            
+            let passed = 0;
+            let failed = 0;
+            
+            xssVectors.forEach(vector => {
+                const cleaned = sanitizer.clean(vector.input);
+                const detected = sanitizer.detectXSS(vector.input);
+                
+                if (detected) {
+                    addResult(`✅ ${vector.name}: XSS detected and blocked`, 'success');
+                    passed++;
+                } else if (cleaned.includes('alert') || cleaned.includes('javascript:')) {
+                    addResult(`❌ ${vector.name}: XSS not fully blocked`, 'error');
+                    failed++;
+                } else {
+                    addResult(`✅ ${vector.name}: Safely sanitized`, 'success');
+                    passed++;
+                }
+            });
+            
+            addResult(`<h4>Results: ${passed} passed, ${failed} failed</h4>`, failed === 0 ? 'success' : 'error');
+        }
+        
+        // Run all automated tests
+        window.runAllTests = function() {
+            clearResults();
+            addResult('<h3>Running Automated Sanitizer Tests...</h3>', 'info');
+            
+            // Test 1: Basic HTML escaping
+            const basicGroup = document.createElement('div');
+            basicGroup.className = 'test-group';
+            basicGroup.innerHTML = '<h3>1. Basic HTML Escaping</h3>';
+            
+            const testHtml = '<div>Hello</div>';
+            const escaped = sanitizer.escapeHtml(testHtml);
+            if (escaped === '&lt;div&gt;Hello&lt;&#x2F;div&gt;') {
+                basicGroup.innerHTML += '<div class="test-result success">✅ HTML escaping works</div>';
+            } else {
+                basicGroup.innerHTML += '<div class="test-result error">❌ HTML escaping failed</div>';
+            }
+            
+            // Test text sanitization
+            const testScript = '<' + 'script>alert(1)<' + '/script>Test';
+            const textOnly = sanitizer.text(testScript);
+            if (!textOnly.includes('script>')) {
+                basicGroup.innerHTML += '<div class="test-result success">✅ Text sanitization works</div>';
+            } else {
+                basicGroup.innerHTML += '<div class="test-result error">❌ Text sanitization failed</div>';
+            }
+            
+            resultsDiv.appendChild(basicGroup);
+            
+            // Test 2: URL sanitization
+            const urlGroup = document.createElement('div');
+            urlGroup.className = 'test-group';
+            urlGroup.innerHTML = '<h3>2. URL Sanitization</h3>';
+            
+            const dangerousURL = 'javascript:alert(1)';
+            const safeURL = sanitizer.url(dangerousURL);
+            if (safeURL === '#') {
+                urlGroup.innerHTML += '<div class="test-result success">✅ Dangerous URL blocked</div>';
+            } else {
+                urlGroup.innerHTML += '<div class="test-result error">❌ Dangerous URL not blocked</div>';
+            }
+            
+            const normalURL = 'https://example.com';
+            const cleanURL = sanitizer.url(normalURL);
+            if (cleanURL === 'https://example.com') {
+                urlGroup.innerHTML += '<div class="test-result success">✅ Normal URL preserved</div>';
+            } else {
+                urlGroup.innerHTML += '<div class="test-result error">❌ Normal URL corrupted</div>';
+            }
+            
+            resultsDiv.appendChild(urlGroup);
+            
+            // Test 3: XSS Detection
+            const detectGroup = document.createElement('div');
+            detectGroup.className = 'test-group';
+            detectGroup.innerHTML = '<h3>3. XSS Detection</h3>';
+            
+            const xssAttempt = '<' + 'script>alert("xss")<' + '/script>';
+            if (sanitizer.detectXSS(xssAttempt)) {
+                detectGroup.innerHTML += '<div class="test-result success">✅ XSS detected correctly</div>';
+            } else {
+                detectGroup.innerHTML += '<div class="test-result error">❌ XSS not detected</div>';
+            }
+            
+            const safeContent = '<p>Hello World</p>';
+            if (!sanitizer.detectXSS(safeContent)) {
+                detectGroup.innerHTML += '<div class="test-result success">✅ Safe content not flagged</div>';
+            } else {
+                detectGroup.innerHTML += '<div class="test-result error">❌ Safe content incorrectly flagged</div>';
+            }
+            
+            resultsDiv.appendChild(detectGroup);
+            
+            // Test 4: Form data sanitization
+            const formGroup = document.createElement('div');
+            formGroup.className = 'test-group';
+            formGroup.innerHTML = '<h3>4. Form Data Sanitization</h3>';
+            
+            const dirtyForm = {
+                name: '<' + 'script>alert(1)<' + '/script>John',
+                email: 'test@example.com',
+                message: '<img src=x onerror="alert(1)">'
+            };
+            
+            const cleanForm = sanitizer.sanitizeFormData(dirtyForm);
+            if (!JSON.stringify(cleanForm).includes('script') && !JSON.stringify(cleanForm).includes('onerror')) {
+                formGroup.innerHTML += '<div class="test-result success">✅ Form data sanitized</div>';
+            } else {
+                formGroup.innerHTML += '<div class="test-result error">❌ Form data not properly sanitized</div>';
+            }
+            
+            resultsDiv.appendChild(formGroup);
+        }
+        
+        window.clearAll = function() {
+            document.getElementById('userInput').value = '';
+            document.getElementById('safeOutput').innerHTML = '';
+            document.getElementById('unsafeOutput').innerHTML = '';
+            clearResults();
+        }
+        
+        // Show initial example
+        window.testSanitized();
+    </script>
+</body>
+</html>

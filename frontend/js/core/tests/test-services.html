@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huddle Services Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .test-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .test-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-loading {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .status-success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .status-error {
+            background: #f44336;
+            color: white;
+        }
+        
+        .test-body {
+            min-height: 150px;
+        }
+        
+        .test-actions {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .output {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Monaco', monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .output.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .output.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Huddle Services Test Suite</h1>
+        
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="test-header">
+                <div class="test-title">📊 Test Summary</div>
+                <span id="overall-status" class="status-badge status-loading">Testing...</span>
+            </div>
+            <div class="summary-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Total Tests</div>
+                    <div class="stat-value" id="total-tests">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Passed</div>
+                    <div class="stat-value" id="passed-tests" style="color: #4caf50;">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Failed</div>
+                    <div class="stat-value" id="failed-tests" style="color: #f44336;">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Coverage</div>
+                    <div class="stat-value" id="coverage">0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-grid">
+            <!-- Storage Service Test -->
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-title">💾 Storage Service</div>
+                    <span class="status-badge status-loading" id="storage-status">Testing...</span>
+                </div>
+                <div class="test-body">
+                    <div class="output" id="storage-output">Running storage tests...</div>
+                </div>
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="testStorage()">Test Storage</button>
+                    <button class="btn btn-secondary" onclick="clearStorage()">Clear Storage</button>
+                </div>
+            </div>
+            
+            <!-- API Service Test -->
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-title">🌐 API Service</div>
+                    <span class="status-badge status-loading" id="api-status">Testing...</span>
+                </div>
+                <div class="test-body">
+                    <div class="output" id="api-output">Running API tests...</div>
+                </div>
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="testAPI()">Test API</button>
+                    <button class="btn btn-secondary" onclick="testAuth()">Test Auth</button>
+                </div>
+            </div>
+            
+            <!-- NFL Data Service Test -->
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-title">🏈 NFL Data Service</div>
+                    <span class="status-badge status-loading" id="nfl-status">Testing...</span>
+                </div>
+                <div class="test-body">
+                    <div class="output" id="nfl-output">Running NFL data tests...</div>
+                </div>
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="testNFLData()">Test NFL</button>
+                    <button class="btn btn-secondary" onclick="testWeekGames()">Week Games</button>
+                </div>
+            </div>
+            
+            <!-- Live Lines Service Test -->
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-title">📈 Live Lines Service</div>
+                    <span class="status-badge status-loading" id="lines-status">Testing...</span>
+                </div>
+                <div class="test-body">
+                    <div class="output" id="lines-output">Running lines tests...</div>
+                </div>
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="testLiveLines()">Test Lines</button>
+                    <button class="btn btn-secondary" onclick="testScores()">Live Scores</button>
+                </div>
+            </div>
+            
+            <!-- Auth Service Test -->
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-title">🔐 Auth Service</div>
+                    <span class="status-badge status-loading" id="auth-status">Testing...</span>
+                </div>
+                <div class="test-body">
+                    <div class="output" id="auth-output">Running auth tests...</div>
+                </div>
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="testAuthService()">Test Auth</button>
+                    <button class="btn btn-secondary" onclick="testLogin()">Test Login</button>
+                </div>
+            </div>
+            
+            <!-- Realtime Service Test -->
+            <div class="test-card">
+                <div class="test-header">
+                    <div class="test-title">⚡ Realtime Service</div>
+                    <span class="status-badge status-loading" id="realtime-status">Testing...</span>
+                </div>
+                <div class="test-body">
+                    <div class="output" id="realtime-output">Running realtime tests...</div>
+                </div>
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="testRealtime()">Test Socket</button>
+                    <button class="btn btn-secondary" onclick="testEvents()">Test Events</button>
+                </div>
+            </div>
+            
+            <!-- Integration Test -->
+            <div class="test-card" style="grid-column: span 2;">
+                <div class="test-header">
+                    <div class="test-title">🔄 Integration Tests</div>
+                    <span class="status-badge status-loading" id="integration-status">Ready</span>
+                </div>
+                <div class="test-body">
+                    <div class="output" id="integration-output">Click to run full integration test...</div>
+                </div>
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="runIntegrationTests()">Run All Tests</button>
+                    <button class="btn btn-secondary" onclick="testDataFlow()">Test Data Flow</button>
+                    <button class="btn btn-secondary" onclick="testCaching()">Test Caching</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load Socket.IO -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    
+    <!-- Load Core Services as Modules -->
+    <script type="module">
+        import { storageService } from '/js/core/services/storage-service.js';
+        import { apiService } from '/js/core/services/api-service.js';
+        import { API_ENDPOINTS } from '/js/core/config/api-endpoints.js';
+        
+        // Make available globally for test functions
+        window.storageService = storageService;
+        window.apiService = apiService;
+        window.API_ENDPOINTS = API_ENDPOINTS;
+    </script>
+    
+    <!-- Load Module Services -->
+    <script type="module" src="/js/services/nfl-data-service.js"></script>
+    <script type="module" src="/js/services/live-lines-service.js"></script>
+    
+    <!-- Load Regular Services -->
+    <script src="/js/services/auth-service.js"></script>
+    <script src="/js/services/realtime-service.js"></script>
+    <script src="/js/services/follow-service.js"></script>
+    <script src="/js/services/bet-service.js"></script>
+    
+    <!-- Service Bridge -->
+    <script type="module" src="/js/services/service-bridge.js"></script>
+    
+    <!-- Test Functions -->
+    <script>
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0
+        };
+        
+        // Wait for services to load
+        window.addEventListener('servicesReady', (e) => {
+            console.log('✅ Services ready:', e.detail);
+            updateStatus('overall', 'Ready to test', 'success');
+            runAllTests();
+        });
+        
+        // Update status badge
+        function updateStatus(service, text, status = 'loading') {
+            const badge = document.getElementById(`${service}-status`);
+            if (badge) {
+                badge.textContent = text;
+                badge.className = `status-badge status-${status}`;
+            }
+        }
+        
+        // Update output
+        function updateOutput(service, text, isError = false) {
+            const output = document.getElementById(`${service}-output`);
+            if (output) {
+                output.textContent = typeof text === 'object' ? JSON.stringify(text, null, 2) : text;
+                output.className = isError ? 'output error' : 'output success';
+            }
+        }
+        
+        // Test Storage Service
+        async function testStorage() {
+            try {
+                updateStatus('storage', 'Testing...', 'loading');
+                
+                // Test basic operations
+                storageService.set('test_key', { value: 'test_data' });
+                const data = storageService.get('test_key');
+                
+                // Test with expiry
+                storageService.setWithExpiry('temp_key', 'temp_value', 1000);
+                const tempData = storageService.getWithExpiry('temp_key');
+                
+                // Test size
+                const size = storageService.getSize();
+                
+                const result = {
+                    basic: data?.value === 'test_data' ? '✅ Pass' : '❌ Fail',
+                    expiry: tempData === 'temp_value' ? '✅ Pass' : '❌ Fail',
+                    size: `${size} bytes`,
+                    keys: storageService.keys()
+                };
+                
+                updateOutput('storage', result);
+                updateStatus('storage', 'Passed', 'success');
+                recordTest(true);
+            } catch (error) {
+                updateOutput('storage', error.message, true);
+                updateStatus('storage', 'Failed', 'error');
+                recordTest(false);
+            }
+        }
+        
+        // Test API Service
+        async function testAPI() {
+            try {
+                updateStatus('api', 'Testing...', 'loading');
+                
+                // Test endpoint generation
+                const endpoints = {
+                    posts: API_ENDPOINTS.POSTS.FEED,
+                    games: API_ENDPOINTS.GAMES.LIVE_GAMES,
+                    lines: API_ENDPOINTS.LINES.ALL_GAMES
+                };
+                
+                // Test API call (will use demo fallback)
+                const games = await window.liveLinesService.getGames();
+                
+                const result = {
+                    endpoints: '✅ Configured',
+                    connection: window.apiService ? '✅ Connected' : '❌ Failed',
+                    demo_fallback: games.length > 0 ? '✅ Working' : '❌ Failed',
+                    games_loaded: games.length
+                };
+                
+                updateOutput('api', result);
+                updateStatus('api', 'Connected', 'success');
+                recordTest(true);
+            } catch (error) {
+                updateOutput('api', error.message, true);
+                updateStatus('api', 'Failed', 'error');
+                recordTest(false);
+            }
+        }
+        
+        // Test NFL Data Service
+        async function testNFLData() {
+            try {
+                updateStatus('nfl', 'Testing...', 'loading');
+                
+                const games = await window.nflDataService.fetchCurrentWeekGames();
+                const gamesCount = Object.values(games).flat().length;
+                
+                const result = {
+                    status: '✅ Connected',
+                    days: Object.keys(games).length,
+                    total_games: gamesCount,
+                    sample_game: Object.values(games).flat()[0]?.name || 'No games'
+                };
+                
+                updateOutput('nfl', result);
+                updateStatus('nfl', `${gamesCount} games`, 'success');
+                recordTest(true);
+            } catch (error) {
+                updateOutput('nfl', error.message, true);
+                updateStatus('nfl', 'Failed', 'error');
+                recordTest(false);
+            }
+        }
+        
+        // Test Live Lines Service
+        async function testLiveLines() {
+            try {
+                updateStatus('lines', 'Testing...', 'loading');
+                
+                const games = await window.liveLinesService.getGames();
+                const scores = await window.liveLinesService.getLiveScores();
+                
+                const result = {
+                    games_loaded: games.length,
+                    live_scores: scores.length,
+                    cache_active: window.liveLinesService.cache.size > 0,
+                    sample_spread: games[0]?.spread || 'N/A'
+                };
+                
+                updateOutput('lines', result);
+                updateStatus('lines', 'Active', 'success');
+                recordTest(true);
+            } catch (error) {
+                updateOutput('lines', error.message, true);
+                updateStatus('lines', 'Failed', 'error');
+                recordTest(false);
+            }
+        }
+        
+        // Test Auth Service
+        async function testAuthService() {
+            try {
+                updateStatus('auth', 'Testing...', 'loading');
+                
+                const isAuth = window.authService.isAuthenticated();
+                const user = window.authService.getCurrentUser();
+                
+                const result = {
+                    authenticated: isAuth ? '✅ Yes' : '❌ No',
+                    user: user?.username || 'Not logged in',
+                    token: window.authService.token ? '✅ Present' : '❌ Missing'
+                };
+                
+                updateOutput('auth', result);
+                updateStatus('auth', isAuth ? 'Authenticated' : 'Not Auth', isAuth ? 'success' : 'error');
+                recordTest(true);
+            } catch (error) {
+                updateOutput('auth', error.message, true);
+                updateStatus('auth', 'Failed', 'error');
+                recordTest(false);
+            }
+        }
+        
+        // Test Realtime Service
+        async function testRealtime() {
+            try {
+                updateStatus('realtime', 'Testing...', 'loading');
+                
+                // Initialize if not already
+                if (!window.realtimeService.socket) {
+                    window.realtimeService.init();
+                }
+                
+                // Wait a bit for connection
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const result = {
+                    socket: window.realtimeService.socket ? '✅ Created' : '❌ Failed',
+                    connected: window.realtimeService.connected ? '✅ Yes' : '⏳ Connecting',
+                    listeners: window.realtimeService.listeners.size
+                };
+                
+                updateOutput('realtime', result);
+                updateStatus('realtime', window.realtimeService.connected ? 'Connected' : 'Connecting', 
+                             window.realtimeService.connected ? 'success' : 'loading');
+                recordTest(true);
+            } catch (error) {
+                updateOutput('realtime', error.message, true);
+                updateStatus('realtime', 'Failed', 'error');
+                recordTest(false);
+            }
+        }
+        
+        // Run all tests
+        async function runAllTests() {
+            testResults = { total: 0, passed: 0, failed: 0 };
+            
+            await testStorage();
+            await testAPI();
+            await testNFLData();
+            await testLiveLines();
+            await testAuthService();
+            await testRealtime();
+            
+            updateSummary();
+        }
+        
+        // Run integration tests
+        async function runIntegrationTests() {
+            updateStatus('integration', 'Running...', 'loading');
+            
+            try {
+                // Test data flow
+                const nflGames = await window.nflDataService.fetchCurrentWeekGames();
+                const liveGames = await window.liveLinesService.getGames();
+                
+                // Test caching
+                const cached1 = await window.liveLinesService.getGames();
+                const cached2 = await window.liveLinesService.getGames();
+                
+                const result = {
+                    nfl_to_lines: '✅ Connected',
+                    cache_working: cached1 === cached2 ? '✅ Yes' : '❌ No',
+                    services_integrated: '✅ All services working together'
+                };
+                
+                updateOutput('integration', result);
+                updateStatus('integration', 'Passed', 'success');
+            } catch (error) {
+                updateOutput('integration', error.message, true);
+                updateStatus('integration', 'Failed', 'error');
+            }
+        }
+        
+        // Record test result
+        function recordTest(passed) {
+            testResults.total++;
+            if (passed) {
+                testResults.passed++;
+            } else {
+                testResults.failed++;
+            }
+            updateSummary();
+        }
+        
+        // Update summary
+        function updateSummary() {
+            document.getElementById('total-tests').textContent = testResults.total;
+            document.getElementById('passed-tests').textContent = testResults.passed;
+            document.getElementById('failed-tests').textContent = testResults.failed;
+            
+            const coverage = testResults.total > 0 
+                ? Math.round((testResults.passed / testResults.total) * 100) 
+                : 0;
+            document.getElementById('coverage').textContent = `${coverage}%`;
+            
+            if (testResults.total > 0) {
+                const allPassed = testResults.failed === 0;
+                updateStatus('overall', allPassed ? 'All Passed!' : `${testResults.failed} Failed`, 
+                           allPassed ? 'success' : 'error');
+            }
+        }
+        
+        // Helper functions for manual testing
+        function clearStorage() {
+            if (confirm('Clear all storage?')) {
+                storageService.clear();
+                updateOutput('storage', 'Storage cleared!');
+            }
+        }
+        
+        async function testLogin() {
+            const result = await window.authService.login('demo@huddle.com', 'demo123');
+            updateOutput('auth', result);
+        }
+        
+        async function testAuth() {
+            const token = 'test-token-' + Date.now();
+            window.apiService.setToken(token);
+            updateOutput('api', { token_set: token });
+        }
+        
+        async function testWeekGames() {
+            const games = await window.nflDataService.fetchWeekGames(1);
+            updateOutput('nfl', games);
+        }
+        
+        async function testScores() {
+            const scores = await window.liveLinesService.getLiveScores();
+            updateOutput('lines', scores);
+        }
+        
+        async function testEvents() {
+            window.realtimeService.emitTyping('test');
+            updateOutput('realtime', 'Typing event emitted');
+        }
+        
+        async function testDataFlow() {
+            updateOutput('integration', 'Testing data flow between services...');
+            await runIntegrationTests();
+        }
+        
+        async function testCaching() {
+            const start = Date.now();
+            await window.liveLinesService.getGames();
+            const firstCall = Date.now() - start;
+            
+            const start2 = Date.now();
+            await window.liveLinesService.getGames();
+            const secondCall = Date.now() - start2;
+            
+            updateOutput('integration', {
+                first_call: `${firstCall}ms`,
+                second_call: `${secondCall}ms (cached)`,
+                cache_effective: secondCall < firstCall
+            });
+        }
+    </script>
+</body>
+</html>

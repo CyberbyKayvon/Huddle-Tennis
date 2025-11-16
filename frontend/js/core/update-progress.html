@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migration Progress Updater</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+        }
+        
+        .progress-bar {
+            background: #e5e7eb;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #10b981, #6366f1);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: width 0.3s;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .stat-card h3 {
+            color: #6366f1;
+            margin: 0 0 10px 0;
+        }
+        
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        
+        .component-list {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .component-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .component-item.completed {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        
+        .component-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            background: #4f46e5;
+        }
+        
+        .export-section {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+        }
+        
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Migration Progress Updater</h1>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar">0%</div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Components</h3>
+                <div class="number" id="componentCount">2/22</div>
+            </div>
+            <div class="stat-card">
+                <h3>API Calls</h3>
+                <div class="number" id="apiCount">5/51</div>
+            </div>
+            <div class="stat-card">
+                <h3>Lines Migrated</h3>
+                <div class="number" id="linesCount">350</div>
+            </div>
+            <div class="stat-card">
+                <h3>Days Elapsed</h3>
+                <div class="number" id="daysCount">1</div>
+            </div>
+        </div>
+        
+        <div class="component-list">
+            <h2>✅ Mark Completed Components</h2>
+            <div id="componentList"></div>
+        </div>
+        
+        <div>
+            <button onclick="updateProgress()">Update Progress</button>
+            <button onclick="generateReport()">Generate Report</button>
+            <button onclick="exportMarkdown()">Export Updated Markdown</button>
+            <button onclick="resetToDefault()">Reset</button>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            ✅ Progress updated successfully!
+        </div>
+        
+        <div class="export-section">
+            <h3>📝 Updated Markdown (Copy this to your MIGRATION-PROGRESS.md file)</h3>
+            <textarea id="markdownOutput" readonly></textarea>
+            <button onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        // Component data
+        const components = [
+            { name: 'reputation-badge.js', lines: 60, apis: 1, completed: true },
+            { name: 'notification-system.js', lines: 290, apis: 4, completed: true },
+            { name: 'handshake-animations.js', lines: 100, apis: 0, completed: false },
+            { name: 'trending-widget.js', lines: 239, apis: 2, completed: false },
+            { name: 'post-interactions.js', lines: 618, apis: 0, completed: false },
+            { name: 'profile-component.js', lines: 364, apis: 3, completed: false },
+            { name: 'comment-system.js', lines: 385, apis: 3, completed: false },
+            { name: 'trending-page.js', lines: 451, apis: 1, completed: false },
+            { name: 'games-calendar.js', lines: 568, apis: 2, completed: false },
+            { name: 'games-hub-component.js', lines: 528, apis: 3, completed: false },
+            { name: 'bet-acceptance.js', lines: 566, apis: 2, completed: false },
+            { name: 'handshake-realtime.js', lines: 243, apis: 1, completed: false },
+            { name: 'post-creator.js', lines: 702, apis: 2, completed: false },
+            { name: 'challenge-bet.js', lines: 736, apis: 2, completed: false },
+            { name: 'groups-component.js', lines: 783, apis: 6, completed: false },
+            { name: 'live-games-widget.js', lines: 838, apis: 3, completed: false },
+            { name: 'game-picker.js', lines: 905, apis: 1, completed: false },
+            { name: 'quick-league-component.js', lines: 1018, apis: 8, completed: false },
+            { name: 'explore-component.js', lines: 1194, apis: 5, completed: false },
+            { name: 'betting-tools-store.js', lines: 2185, apis: 11, completed: false },
+            { name: 'platform-generator.js', lines: 2825, apis: 1, completed: false },
+            { name: 'betting-hub.js', lines: 344, apis: 4, completed: false }
+        ];
+        
+        function renderComponents() {
+            const list = document.getElementById('componentList');
+            list.innerHTML = components.map((comp, index) => `
+                <div class="component-item ${comp.completed ? 'completed' : ''}">
+                    <label style="flex: 1; cursor: pointer;">
+                        <input type="checkbox" 
+                               id="comp-${index}" 
+                               ${comp.completed ? 'checked' : ''} 
+                               onchange="toggleComponent(${index})">
+                        <strong>${comp.name}</strong> (${comp.lines} lines, ${comp.apis} API calls)
+                    </label>
+                    ${comp.completed ? '<span style="color: #10b981;">✅ Completed</span>' : ''}
+                </div>
+            `).join('');
+            
+            updateStats();
+        }
+        
+        function toggleComponent(index) {
+            components[index].completed = document.getElementById(`comp-${index}`).checked;
+            renderComponents();
+        }
+        
+        function updateStats() {
+            const completed = components.filter(c => c.completed);
+            const totalLines = components.reduce((sum, c) => sum + c.lines, 0);
+            const completedLines = completed.reduce((sum, c) => sum + c.lines, 0);
+            const totalAPIs = components.reduce((sum, c) => sum + c.apis, 0);
+            const completedAPIs = completed.reduce((sum, c) => sum + c.apis, 0);
+            
+            const progress = Math.round((completed.length / components.length) * 100);
+            
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressBar').textContent = progress + '%';
+            document.getElementById('componentCount').textContent = `${completed.length}/${components.length}`;
+            document.getElementById('apiCount').textContent = `${completedAPIs}/${totalAPIs}`;
+            document.getElementById('linesCount').textContent = completedLines.toLocaleString();
+            
+            // Calculate days (you can adjust the start date)
+            const startDate = new Date('2025-01-01'); // Adjust this to your actual start date
+            const today = new Date();
+            const days = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            document.getElementById('daysCount').textContent = days;
+        }
+        
+        function updateProgress() {
+            updateStats();
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        }
+        
+        function generateReport() {
+            const completed = components.filter(c => c.completed);
+            const remaining = components.filter(c => !c.completed);
+            
+            let report = `## Progress Report - ${new Date().toLocaleDateString()}\n\n`;
+            report += `### Summary\n`;
+            report += `- Components Completed: ${completed.length}/22 (${Math.round(completed.length/22*100)}%)\n`;
+            report += `- Next Up: ${remaining[0]?.name || 'All complete!'}\n\n`;
+            
+            report += `### Completed Today\n`;
+            completed.forEach(c => {
+                report += `- ✅ ${c.name}\n`;
+            });
+            
+            report += `\n### Still To Do\n`;
+            remaining.slice(0, 5).forEach(c => {
+                report += `- ⬜ ${c.name}\n`;
+            });
+            
+            document.getElementById('markdownOutput').value = report;
+        }
+        
+        function exportMarkdown() {
+            const completed = components.filter(c => c.completed);
+            const progress = Math.round((completed.length / components.length) * 100);
+            const progressBar = '⬛'.repeat(Math.floor(progress/10)) + '⬜'.repeat(10 - Math.floor(progress/10));
+            
+            let markdown = `## 🎯 Overall Progress\n\n`;
+            markdown += `| Category | Total | Completed | Remaining | Progress |\n`;
+            markdown += `|----------|-------|-----------|-----------|----------|\n`;
+            markdown += `| **Components** | 22 | ${completed.length} | ${22-completed.length} | ${progressBar} ${progress}% |\n\n`;
+            
+            markdown += `### ✅ Completed (${completed.length}/22)\n\n`;
+            markdown += `| Component | Lines | API Calls | Migrated | Tested | Notes |\n`;
+            markdown += `|-----------|-------|-----------|----------|---------|-------|\n`;
+            
+            completed.forEach(c => {
+                markdown += `| \`${c.name}\` | ${c.lines} | ${c.apis} | ✅ Jan 2025 | ✅ | Migrated |\n`;
+            });
+            
+            document.getElementById('markdownOutput').value = markdown;
+        }
+        
+        function copyToClipboard() {
+            const textarea = document.getElementById('markdownOutput');
+            textarea.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard! Paste this into your MIGRATION-PROGRESS.md file');
+        }
+        
+        function resetToDefault() {
+            if (confirm('Reset all progress? This will mark all components as incomplete except the first two.')) {
+                components.forEach((c, i) => {
+                    c.completed = i < 2;
+                });
+                renderComponents();
+            }
+        }
+        
+        // Initialize
+        renderComponents();
+    </script>
+</body>
+</html>

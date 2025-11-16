@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Storage Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 10px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .test-group {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-group h3 {
+            margin-top: 0;
+            color: #6366f1;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        .storage-info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Storage Service Test</h1>
+        
+        <div class="storage-info">
+            <h3>Current Storage Status</h3>
+            <div id="storage-status"></div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="runAllTests()">Run All Tests</button>
+            <button onclick="clearTestData()">Clear Test Data</button>
+            <button onclick="testQuotaExceeded()">Test Quota Exceeded</button>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script type="module">
+        import { storageService } from '/js/core/services/storage-service.js';
+        
+        window.storageService = storageService; // Make available to buttons
+        
+        const resultsDiv = document.getElementById('test-results');
+        let testsPassed = 0;
+        let testsFailed = 0;
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+            testsPassed = 0;
+            testsFailed = 0;
+        }
+        
+        function updateStorageStatus() {
+            const statusDiv = document.getElementById('storage-status');
+            const keys = storageService.keys();
+            const size = storageService.getSize();
+            
+            statusDiv.innerHTML = `
+                <p><strong>Storage Available:</strong> ${storageService.isAvailable ? '✅ Yes' : '❌ No'}</p>
+                <p><strong>Keys Stored:</strong> ${keys.length}</p>
+                <p><strong>Storage Size:</strong> ${(size / 1024).toFixed(2)} KB</p>
+                <p><strong>Keys:</strong> ${keys.length > 0 ? keys.join(', ') : 'None'}</p>
+            `;
+        }
+        
+        window.runAllTests = async function() {
+            clearResults();
+            addResult('<h3>Starting Storage Service Tests...</h3>', 'info');
+            
+            // Test 1: Check availability
+            const availGroup = document.createElement('div');
+            availGroup.className = 'test-group';
+            availGroup.innerHTML = '<h3>1. Availability Test</h3>';
+            
+            if (storageService.isAvailable) {
+                availGroup.innerHTML += '<div class="test-result success">✅ Storage is available</div>';
+                testsPassed++;
+            } else {
+                availGroup.innerHTML += '<div class="test-result error">❌ Storage not available</div>';
+                testsFailed++;
+            }
+            resultsDiv.appendChild(availGroup);
+            
+            // Test 2: Basic operations
+            const basicGroup = document.createElement('div');
+            basicGroup.className = 'test-group';
+            basicGroup.innerHTML = '<h3>2. Basic Operations</h3>';
+            
+            // Test set and get
+            storageService.set('test_string', 'Hello World');
+            const getString = storageService.get('test_string');
+            if (getString === 'Hello World') {
+                basicGroup.innerHTML += '<div class="test-result success">✅ String storage works</div>';
+                testsPassed++;
+            } else {
+                basicGroup.innerHTML += '<div class="test-result error">❌ String storage failed</div>';
+                testsFailed++;
+            }
+            
+            // Test object storage
+            const testObj = { name: 'Test', value: 123, nested: { data: true } };
+            storageService.set('test_object', testObj);
+            const getObj = storageService.get('test_object');
+            if (getObj && getObj.name === 'Test' && getObj.nested.data === true) {
+                basicGroup.innerHTML += '<div class="test-result success">✅ Object storage works</div>';
+                testsPassed++;
+            } else {
+                basicGroup.innerHTML += '<div class="test-result error">❌ Object storage failed</div>';
+                testsFailed++;
+            }
+            
+            // Test array storage
+            const testArray = [1, 2, 3, 'test', { id: 1 }];
+            storageService.set('test_array', testArray);
+            const getArray = storageService.get('test_array');
+            if (Array.isArray(getArray) && getArray.length === 5) {
+                basicGroup.innerHTML += '<div class="test-result success">✅ Array storage works</div>';
+                testsPassed++;
+            } else {
+                basicGroup.innerHTML += '<div class="test-result error">❌ Array storage failed</div>';
+                testsFailed++;
+            }
+            
+            // Test default value
+            const notExist = storageService.get('does_not_exist', 'default');
+            if (notExist === 'default') {
+                basicGroup.innerHTML += '<div class="test-result success">✅ Default value works</div>';
+                testsPassed++;
+            } else {
+                basicGroup.innerHTML += '<div class="test-result error">❌ Default value failed</div>';
+                testsFailed++;
+            }
+            
+            resultsDiv.appendChild(basicGroup);
+            
+            // Test 3: Advanced operations
+            const advGroup = document.createElement('div');
+            advGroup.className = 'test-group';
+            advGroup.innerHTML = '<h3>3. Advanced Operations</h3>';
+            
+            // Test has method
+            if (storageService.has('test_string') && !storageService.has('not_exist')) {
+                advGroup.innerHTML += '<div class="test-result success">✅ Has method works</div>';
+                testsPassed++;
+            } else {
+                advGroup.innerHTML += '<div class="test-result error">❌ Has method failed</div>';
+                testsFailed++;
+            }
+            
+            // Test remove
+            storageService.remove('test_string');
+            if (!storageService.has('test_string')) {
+                advGroup.innerHTML += '<div class="test-result success">✅ Remove works</div>';
+                testsPassed++;
+            } else {
+                advGroup.innerHTML += '<div class="test-result error">❌ Remove failed</div>';
+                testsFailed++;
+            }
+            
+            // Test keys listing
+            const keys = storageService.keys();
+            if (Array.isArray(keys) && keys.includes('test_object')) {
+                advGroup.innerHTML += '<div class="test-result success">✅ Keys listing works</div>';
+                testsPassed++;
+            } else {
+                advGroup.innerHTML += '<div class="test-result error">❌ Keys listing failed</div>';
+                testsFailed++;
+            }
+            
+            resultsDiv.appendChild(advGroup);
+            
+            // Test 4: Expiry functionality
+            const expiryGroup = document.createElement('div');
+            expiryGroup.className = 'test-group';
+            expiryGroup.innerHTML = '<h3>4. Expiry Tests</h3>';
+            
+            // Set with immediate expiry
+            storageService.setWithExpiry('test_expire', 'expires soon', 100); // 100ms
+            const beforeExpiry = storageService.getWithExpiry('test_expire');
+            
+            // Wait for expiry
+            await new Promise(resolve => setTimeout(resolve, 150));
+            const afterExpiry = storageService.getWithExpiry('test_expire', 'expired');
+            
+            if (beforeExpiry === 'expires soon' && afterExpiry === 'expired') {
+                expiryGroup.innerHTML += '<div class="test-result success">✅ Expiry works correctly</div>';
+                testsPassed++;
+            } else {
+                expiryGroup.innerHTML += '<div class="test-result error">❌ Expiry failed</div>';
+                testsFailed++;
+            }
+            
+            resultsDiv.appendChild(expiryGroup);
+            
+            // Summary
+            const summary = document.createElement('div');
+            summary.className = 'test-group';
+            summary.style.marginTop = '30px';
+            summary.style.background = testsFailed === 0 ? '#d4edda' : '#f8d7da';
+            summary.innerHTML = `
+                <h2>📊 Test Summary</h2>
+                <p><strong>Tests Passed:</strong> ${testsPassed}</p>
+                <p><strong>Tests Failed:</strong> ${testsFailed}</p>
+                <p><strong>Status:</strong> ${testsFailed === 0 ? '✅ All tests passed!' : '❌ Some tests failed'}</p>
+            `;
+            resultsDiv.appendChild(summary);
+            
+            // Update status
+            updateStorageStatus();
+        }
+        
+        window.clearTestData = function() {
+            storageService.clear();
+            addResult('<div class="test-result warning">Cleared all test data</div>', 'warning');
+            updateStorageStatus();
+        }
+        
+        window.testQuotaExceeded = function() {
+            // Try to fill storage (this won't actually fill it, just demonstrates the handling)
+            const bigData = new Array(1000).fill('x').join('');
+            let i = 0;
+            
+            try {
+                // Try to store increasingly large data
+                for (i = 0; i < 100; i++) {
+                    storageService.set(`big_data_${i}`, bigData.repeat(10));
+                }
+            } catch (e) {
+                addResult(`<div class="test-result info">Storage filled after ${i} items</div>`, 'info');
+            }
+            
+            // Now test if cleanup works
+            storageService.cleanup();
+            updateStorageStatus();
+        }
+        
+        // Initial status
+        updateStorageStatus();
+        
+        // Auto-run tests
+        window.runAllTests();
+    </script>
+</body>
+</html>

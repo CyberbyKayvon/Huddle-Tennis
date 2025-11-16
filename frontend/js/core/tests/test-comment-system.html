@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Comment System</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --surface: #f9fafb;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* Mock post styles */
+        .post {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .post[data-post-id] {
+            position: relative;
+        }
+        
+        .author-name, .author-handle, .post-content, .post-time {
+            margin: 5px 0;
+        }
+        
+        /* Comment modal styles */
+        #commentModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content {
+            max-width: 600px;
+            margin: 30px auto;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-secondary);
+            border-radius: 20px 20px 0 0;
+        }
+        
+        #originalPost {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+        
+        #commentsContainer {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 1.5rem;
+            min-height: 200px;
+            max-height: 400px;
+        }
+        
+        .comment-input-section {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-secondary);
+            border-radius: 0 0 20px 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="test-container">
+        <h1>💬 Comment System Test</h1>
+        
+        <div class="test-section">
+            <h3>Component Status</h3>
+            <div id="component-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Posts (Click to open comments)</h3>
+            
+            <!-- Test Post 1 -->
+            <div class="post" data-post-id="test-post-1">
+                <div class="author-name">John Doe</div>
+                <div class="author-handle">@johndoe</div>
+                <div class="post-content">This is a test post to verify comment functionality.</div>
+                <div class="post-time">2 hours ago</div>
+                <button onclick="commentSystem.open('test-post-1')">
+                    <i class="far fa-comment"></i> View Comments
+                </button>
+            </div>
+            
+            <!-- Test Post 2 (for XSS testing) -->
+            <div class="post" data-post-id="test-post-2">
+                <div class="author-name">XSS Tester</div>
+                <div class="author-handle">@xsstester</div>
+                <div class="post-content">Testing XSS prevention in comments</div>
+                <div class="post-time">1 hour ago</div>
+                <button onclick="commentSystem.open('test-post-2')">
+                    <i class="far fa-comment"></i> View Comments
+                </button>
+            </div>
+        </div>
+        
+        <!-- Comment Modal (mimics feed.html structure) -->
+        <div id="commentModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 style="margin: 0;">Post</h3>
+                    <button onclick="closeCommentModal()" style="background: none; color: var(--text-muted);">×</button>
+                </div>
+                
+                <div id="originalPost">
+                    <!-- Original post will be loaded here -->
+                </div>
+                
+                <div id="commentsContainer">
+                    <!-- Comments will be loaded here -->
+                </div>
+                
+                <div class="comment-input-section">
+                    <div style="display: flex; gap: 0.75rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">
+                            <span id="commentUserAvatar">U</span>
+                        </div>
+                        <div style="flex: 1;">
+                            <textarea id="commentInput" placeholder="Post your reply" style="width: 100%; padding: 0.75rem; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 16px; color: var(--text); resize: none;"></textarea>
+                            <button id="postCommentBtn" onclick="postComment()" disabled>Reply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Controls</h3>
+            <button onclick="testOpenModal()">Test Open Modal</button>
+            <button onclick="testPostComment()">Test Post Comment</button>
+            <button onclick="testXSSPrevention()">Test XSS Prevention</button>
+            <button onclick="testDemoComments()">Load Demo Comments</button>
+            <button onclick="runAllTests()">Run All Tests</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Results</h3>
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { commentSystem } from '/js/components/comment-system.js';
+        import { apiService } from '/js/core/services/api-service.js';
+        import { API_ENDPOINTS } from '/js/core/config/api-endpoints.js';
+        
+        // Make available globally
+        window.commentSystem = commentSystem;
+        
+        const resultsDiv = document.getElementById('test-results');
+        
+        // Mock auth service
+        window.authService = {
+            isAuthenticated: () => true,
+            getCurrentUser: () => ({
+                username: 'testuser',
+                displayName: 'Test User',
+                verified: true
+            })
+        };
+        
+        // Mock API responses
+        apiService.get = async function(endpoint) {
+            // Simulate delay
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            if (endpoint.includes('/posts/test-post-1')) {
+                if (endpoint.includes('/comments')) {
+                    return {
+                        success: true,
+                        comments: [
+                            {
+                                _id: 'comment-1',
+                                author: {
+                                    username: 'user1',
+                                    displayName: 'User One',
+                                    verified: true
+                                },
+                                content: 'Great post!',
+                                createdAt: new Date(Date.now() - 300000),
+                                likes: []
+                            },
+                            {
+                                _id: 'comment-2',
+                                author: {
+                                    username: 'user2',
+                                    displayName: 'User Two',
+                                    verified: false
+                                },
+                                content: 'I agree with this analysis.',
+                                createdAt: new Date(Date.now() - 600000),
+                                likes: []
+                            }
+                        ]
+                    };
+                }
+                return {
+                    success: true,
+                    post: {
+                        content: 'This is a test post to verify comment functionality.',
+                        author: {
+                            username: 'johndoe',
+                            displayName: 'John Doe',
+                            verified: false
+                        }
+                    }
+                };
+            }
+            
+            if (endpoint.includes('/posts/test-post-2')) {
+                if (endpoint.includes('/comments')) {
+                    // Return malicious comments for XSS testing
+                    return {
+                        success: true,
+                        comments: [
+                            {
+                                _id: 'xss-comment-1',
+                                author: {
+                                    username: 'attacker',
+                                    displayName: '<img src=x onerror="alert(1)">',
+                                    verified: false
+                                },
+                                content: '<' + 'script>alert("XSS")<' + '/script>',
+                                createdAt: new Date(),
+                                likes: []
+                            }
+                        ]
+                    };
+                }
+                return {
+                    success: true,
+                    post: {
+                        content: 'Testing XSS prevention',
+                        author: {
+                            username: 'xsstester',
+                            displayName: 'XSS Tester',
+                            verified: false
+                        }
+                    }
+                };
+            }
+            
+            return { success: false, comments: [] };
+        };
+        
+        apiService.post = async function(endpoint, data) {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return { success: true };
+        };
+        
+        function updateComponentStatus() {
+            const statusDiv = document.getElementById('component-status');
+            const isLoaded = typeof commentSystem !== 'undefined';
+            
+            statusDiv.innerHTML = `
+                <p>✅ Component Loaded: ${isLoaded}</p>
+                <p>Current Post ID: ${commentSystem.currentPostId || 'None'}</p>
+                <p>Methods Available: 
+                    ${typeof commentSystem?.open === 'function' ? '✅' : '❌'} open,
+                    ${typeof commentSystem?.postComment === 'function' ? '✅' : '❌'} postComment,
+                    ${typeof commentSystem?.close === 'function' ? '✅' : '❌'} close,
+                    ${typeof commentSystem?.showToast === 'function' ? '✅' : '❌'} showToast
+                </p>
+            `;
+        }
+        
+        window.testOpenModal = async function() {
+            addResult('Opening comment modal...', 'info');
+            await commentSystem.open('test-post-1');
+            
+            if (document.getElementById('commentModal').style.display === 'block') {
+                addResult('✅ Modal opened successfully', 'success');
+                
+                // Check if comments loaded
+                const container = document.getElementById('commentsContainer');
+                if (container && container.innerHTML.includes('comment')) {
+                    addResult('✅ Comments loaded', 'success');
+                }
+            } else {
+                addResult('❌ Failed to open modal', 'error');
+            }
+        }
+        
+        window.testPostComment = async function() {
+            if (!commentSystem.currentPostId) {
+                await commentSystem.open('test-post-1');
+            }
+            
+            const input = document.getElementById('commentInput');
+            if (input) {
+                input.value = 'This is a test comment!';
+                input.dispatchEvent(new Event('input'));
+                
+                addResult('Posting test comment...', 'info');
+                await commentSystem.postComment();
+                
+                addResult('✅ Comment posted', 'success');
+            }
+        }
+        
+        window.testXSSPrevention = async function() {
+            addResult('Testing XSS prevention...', 'info');
+            
+            // Open modal with malicious content
+            await commentSystem.open('test-post-2');
+            
+            // Wait for content to load
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Check if XSS was prevented
+            const container = document.getElementById('commentsContainer');
+            const originalPost = document.getElementById('originalPost');
+            
+            // Here's the correct way to check for XSS prevention
+            const hasScriptTag = container.innerHTML.includes('<' + 'script>') || 
+                                container.innerHTML.includes('<' + '/script>');
+            const hasOnerror = container.innerHTML.includes('onerror');
+            
+            if (!hasScriptTag && !hasOnerror) {
+                addResult('✅ XSS prevention working - no script tags or onerror attributes', 'success');
+            } else {
+                addResult('❌ XSS vulnerability detected', 'error');
+            }
+            
+            // Close modal
+            commentSystem.close();
+        }
+        
+        window.testDemoComments = function() {
+            addResult('Loading demo comments...', 'info');
+            
+            const container = document.getElementById('commentsContainer');
+            if (container) {
+                container.innerHTML = commentSystem.getDemoComments();
+                addResult('✅ Demo comments loaded', 'success');
+            }
+        }
+        
+        window.runAllTests = async function() {
+            resultsDiv.innerHTML = '';
+            addResult('<h4>Running All Tests...</h4>', 'info');
+            
+            // Test 1: Component loaded
+            if (typeof commentSystem !== 'undefined') {
+                addResult('✅ Component loaded successfully', 'success');
+            } else {
+                addResult('❌ Component not loaded', 'error');
+                return;
+            }
+            
+            // Test 2: Open modal
+            await testOpenModal();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Test 3: Post comment
+            await testPostComment();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Test 4: Close modal
+            commentSystem.close();
+            if (document.getElementById('commentModal').style.display === 'none' || 
+                document.getElementById('commentModal').style.display === '') {
+                addResult('✅ Modal close works', 'success');
+            }
+            
+            // Test 5: XSS Prevention - CRITICAL TEST
+            await testXSSPrevention();
+            
+            // Test 6: Toast notification
+            commentSystem.showToast('Test toast', 'success');
+            addResult('✅ Toast notification works', 'success');
+            
+            addResult('<h4>All tests complete!</h4>', 'info');
+            updateComponentStatus();
+        }
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        // Initialize
+        updateComponentStatus();
+    </script>
+</body>
+</html>

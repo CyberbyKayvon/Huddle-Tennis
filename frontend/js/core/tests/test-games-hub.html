@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Games Hub Component</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --surface: #f9fafb;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #6366f1;
+        }
+        
+        /* Games hub container */
+        .games-hub-display {
+            background: white;
+            min-height: 400px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6366f1;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="test-container">
+        <h1>🏈 Games Hub Component Test</h1>
+        
+        <div class="test-section">
+            <h3>Component Status</h3>
+            <div id="component-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Games Hub Display</h3>
+            <div class="games-hub-display" id="hub-container">
+                <!-- Games hub will render here -->
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Controls</h3>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="renderHub()">Render Hub</button>
+                <button onclick="testFetchGames()">Test Fetch Games</button>
+                <button onclick="testWeekNavigation()">Test Week Navigation</button>
+                <button onclick="testLeagueSwitch()">Test League Switch</button>
+                <button onclick="testLiveGame()">Simulate Live Game</button>
+                <button onclick="testQuickAnalysis()">Test Quick Analysis</button>
+                <button onclick="testXSSPrevention()">Test XSS Prevention</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="current-week">1</div>
+                    <div class="stat-label">Current Week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="current-league">NFL</div>
+                    <div class="stat-label">League</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="games-count">0</div>
+                    <div class="stat-label">Games Loaded</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="api-calls">0</div>
+                    <div class="stat-label">API Calls</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Results</h3>
+            <div id="test-results"></div>
+            <button onclick="runAllTests()" style="margin-top: 15px;">Run All Tests</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { gamesHub } from '/js/components/games-hub-component.js';
+        import { apiService } from '/js/core/services/api-service.js';
+        import { API_ENDPOINTS } from '/js/core/config/api-endpoints.js';
+        
+        // Make available globally
+        window.gamesHub = gamesHub;
+        
+        const resultsDiv = document.getElementById('test-results');
+        let apiCallCount = 0;
+        
+        // Mock game data
+        const mockGames = [
+            {
+                id: 'game1',
+                name: 'Chiefs @ Bills',
+                date: new Date().toISOString(),
+                competitions: [{
+                    competitors: [
+                        { homeAway: 'away', team: { displayName: 'Kansas City Chiefs', abbreviation: 'KC', logo: 'KC' }, score: '21', records: [{ summary: '11-2' }] },
+                        { homeAway: 'home', team: { displayName: 'Buffalo Bills', abbreviation: 'BUF', logo: 'BUF' }, score: '17', records: [{ summary: '10-3' }] }
+                    ],
+                    odds: [{ details: 'BUF -2.5', overUnder: 47.5 }]
+                }],
+                status: { type: { description: 'Q3 - 8:45', state: 'in' }, period: 'Q3', displayClock: '8:45' }
+            },
+            {
+                id: 'game2',
+                name: 'Eagles @ Cowboys',
+                date: new Date(Date.now() + 86400000).toISOString(),
+                competitions: [{
+                    competitors: [
+                        { homeAway: 'away', team: { displayName: 'Philadelphia Eagles', abbreviation: 'PHI', logo: 'PHI' }, score: '0', records: [{ summary: '10-3' }] },
+                        { homeAway: 'home', team: { displayName: 'Dallas Cowboys', abbreviation: 'DAL', logo: 'DAL' }, score: '0', records: [{ summary: '9-4' }] }
+                    ],
+                    odds: [{ details: 'PHI -3.5', overUnder: 51.5 }]
+                }],
+                status: { type: { description: '4:25 PM ET', state: 'pre' } }
+            },
+            {
+                id: 'game3',
+                name: 'Packers @ Lions',
+                date: new Date(Date.now() - 86400000).toISOString(),
+                competitions: [{
+                    competitors: [
+                        { homeAway: 'away', team: { displayName: 'Green Bay Packers', abbreviation: 'GB', logo: 'GB' }, score: '28', records: [{ summary: '8-5' }] },
+                        { homeAway: 'home', team: { displayName: 'Detroit Lions', abbreviation: 'DET', logo: 'DET' }, score: '31', records: [{ summary: '11-2' }] }
+                    ],
+                    odds: [{ details: 'DET -4.5', overUnder: 52.5 }]
+                }],
+                status: { type: { description: 'FINAL', state: 'final' } }
+            }
+        ];
+        
+        // Mock API responses
+        apiService.get = async function(endpoint) {
+            apiCallCount++;
+            document.getElementById('api-calls').textContent = apiCallCount;
+            
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            if (endpoint.includes('/nfl/schedule/')) {
+                return {
+                    success: true,
+                    games: mockGames
+                };
+            }
+            
+            return { success: false, games: [] };
+        };
+        
+        apiService.post = async function(endpoint, data) {
+            apiCallCount++;
+            document.getElementById('api-calls').textContent = apiCallCount;
+            
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            if (endpoint.includes('/analysis/basic/')) {
+                return {
+                    confidence: 78,
+                    recommendation: 'Chiefs -2.5',
+                    summary: 'Chiefs have strong road record and momentum heading into this matchup.'
+                };
+            }
+            
+            return { success: false };
+        };
+        
+        function updateComponentStatus() {
+            const statusDiv = document.getElementById('component-status');
+            const isLoaded = typeof gamesHub !== 'undefined';
+            
+            statusDiv.innerHTML = `
+                <p>✅ Component Loaded: ${isLoaded}</p>
+                <p>Current Week: ${gamesHub.currentWeek}</p>
+                <p>Current League: ${gamesHub.currentLeague}</p>
+                <p>Season Type: ${gamesHub.currentSeasonType}</p>
+                <p>Games Count: ${gamesHub.games.length}</p>
+                <p>Methods Available: 
+                    ${typeof gamesHub?.render === 'function' ? '✅' : '❌'} render,
+                    ${typeof gamesHub?.fetchGames === 'function' ? '✅' : '❌'} fetchGames,
+                    ${typeof gamesHub?.switchLeague === 'function' ? '✅' : '❌'} switchLeague,
+                    ${typeof gamesHub?.quickAnalysis === 'function' ? '✅' : '❌'} quickAnalysis
+                </p>
+            `;
+            
+            document.getElementById('current-week').textContent = gamesHub.currentWeek;
+            document.getElementById('current-league').textContent = gamesHub.currentLeague.toUpperCase();
+            document.getElementById('games-count').textContent = gamesHub.games.length;
+        }
+        
+        window.renderHub = function() {
+            addResult('Rendering games hub...', 'info');
+            const container = document.getElementById('hub-container');
+            container.innerHTML = gamesHub.render();
+            
+            // Initialize after rendering
+            gamesHub.initialize();
+            
+            setTimeout(() => {
+                if (document.querySelector('.games-hub-container')) {
+                    addResult('✅ Games hub rendered successfully', 'success');
+                } else {
+                    addResult('❌ Failed to render games hub', 'error');
+                }
+            }, 100);
+        }
+        
+        window.testFetchGames = async function() {
+            addResult('Testing game fetching...', 'info');
+            
+            await gamesHub.fetchGames();
+            
+            setTimeout(() => {
+                const gamesList = document.getElementById('games-list');
+                if (gamesList && gamesList.children.length > 0) {
+                    addResult(`✅ Fetched and displayed ${gamesHub.games.length} games`, 'success');
+                    updateComponentStatus();
+                } else {
+                    addResult('❌ Failed to fetch/display games', 'error');
+                }
+            }, 500);
+        }
+        
+        window.testWeekNavigation = function() {
+            addResult('Testing week navigation...', 'info');
+            
+            const initialWeek = gamesHub.currentWeek;
+            
+            // Test next week
+            gamesHub.nextWeek();
+            if (gamesHub.currentWeek === initialWeek + 1) {
+                addResult('✅ Next week navigation works', 'success');
+            } else {
+                addResult('❌ Next week navigation failed', 'error');
+            }
+            
+            // Test previous week
+            gamesHub.previousWeek();
+            if (gamesHub.currentWeek === initialWeek) {
+                addResult('✅ Previous week navigation works', 'success');
+            } else {
+                addResult('❌ Previous week navigation failed', 'error');
+            }
+            
+            updateComponentStatus();
+        }
+        
+        window.testLeagueSwitch = function() {
+            addResult('Testing league switching...', 'info');
+            
+            // Switch to NBA
+            gamesHub.switchLeague('nba');
+            if (gamesHub.currentLeague === 'nba') {
+                addResult('✅ Switched to NBA', 'success');
+            }
+            
+            // Switch back to NFL
+            gamesHub.switchLeague('nfl');
+            if (gamesHub.currentLeague === 'nfl') {
+                addResult('✅ Switched back to NFL', 'success');
+            }
+            
+            updateComponentStatus();
+        }
+        
+        window.testLiveGame = function() {
+            addResult('Simulating live game...', 'info');
+            
+            // Add a live game to the display
+            const liveGame = mockGames[0]; // This one has state: 'in'
+            gamesHub.games = gamesHub.groupGamesByDay([liveGame]);
+            gamesHub.displayGames();
+            
+            setTimeout(() => {
+                const liveIndicator = document.querySelector('[style*="LIVE"]');
+                if (liveIndicator) {
+                    addResult('✅ Live game indicator displayed', 'success');
+                } else {
+                    addResult('❌ Live game indicator not found', 'error');
+                }
+            }, 100);
+        }
+        
+        window.testQuickAnalysis = async function() {
+            addResult('Testing quick analysis...', 'info');
+            
+            await gamesHub.quickAnalysis('game1');
+            
+            setTimeout(() => {
+                const modal = document.querySelector('[style*="z-index: 10000"]');
+                if (modal) {
+                    addResult('✅ Analysis modal opened', 'success');
+                    // Close the modal
+                    modal.remove();
+                } else {
+                    addResult('❌ Analysis modal not found', 'error');
+                }
+            }, 500);
+        }
+        
+        window.testXSSPrevention = function() {
+            addResult('Testing XSS prevention...', 'info');
+            
+            // Create a malicious game object
+            const maliciousGame = {
+                id: 'xss-test',
+                name: '<' + 'script>alert("XSS")</' + 'script>',
+                date: new Date().toISOString(),
+                competitions: [{
+                    competitors: [
+                        { 
+                            homeAway: 'away', 
+                            team: { 
+                                displayName: '<img src=x onerror="alert(1)">', 
+                                abbreviation: 'XSS', 
+                                logo: 'javascript:alert(1)' 
+                            }, 
+                            score: '0', 
+                            records: [{ summary: '0-0' }] 
+                        },
+                        { 
+                            homeAway: 'home', 
+                            team: { 
+                                displayName: 'Test Team', 
+                                abbreviation: 'TEST', 
+                                logo: 'TEST' 
+                            }, 
+                            score: '0', 
+                            records: [{ summary: '0-0' }] 
+                        }
+                    ],
+                    odds: [{ details: 'TEST -1', overUnder: 50 }]
+                }],
+                status: { type: { description: '1:00 PM', state: 'pre' } }
+            };
+            
+            // Process and display the malicious game
+            gamesHub.games = gamesHub.groupGamesByDay([maliciousGame]);
+            gamesHub.displayGames();
+            
+            setTimeout(() => {
+                const gamesList = document.getElementById('games-list');
+                const hasScriptTag = gamesList.innerHTML.includes('<' + 'script>');
+                const hasOnerror = gamesList.innerHTML.includes('onerror');
+                const hasJavascript = gamesList.innerHTML.includes('javascript:');
+                
+                if (!hasScriptTag && !hasOnerror && !hasJavascript) {
+                    addResult('✅ XSS prevention working', 'success');
+                } else {
+                    addResult('❌ XSS vulnerability detected', 'error');
+                }
+            }, 100);
+        }
+        
+        window.runAllTests = async function() {
+            resultsDiv.innerHTML = '';
+            addResult('<h4>Running All Tests...</h4>', 'info');
+            
+            // Test 1: Component loaded
+            if (typeof gamesHub !== 'undefined') {
+                addResult('✅ Component loaded successfully', 'success');
+            } else {
+                addResult('❌ Component not loaded', 'error');
+                return;
+            }
+            
+            // Test 2: Render hub
+            renderHub();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Test 3: Fetch games
+            await testFetchGames();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Test 4: Week navigation
+            testWeekNavigation();
+            
+            // Test 5: League switching
+            testLeagueSwitch();
+            
+            // Test 6: Live game display
+            testLiveGame();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            // Test 7: Quick analysis
+            await testQuickAnalysis();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Test 8: XSS Prevention
+            testXSSPrevention();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            // Test 9: Cleanup
+            gamesHub.cleanup();
+            addResult('✅ Cleanup executed', 'success');
+            
+            addResult('<h4>All tests complete!</h4>', 'info');
+            updateComponentStatus();
+        }
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        // Initialize
+        updateComponentStatus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Bet Acceptance System</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --surface: #f9fafb;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #6366f1;
+        }
+        
+        /* Bet card styles */
+        .bet-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .bet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .bet-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        
+        .bet-odds {
+            background: #6366f1;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        /* Handshake container styles */
+        .handshake-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 12px;
+            background: #f3f4f6;
+            transition: all 0.3s ease;
+            font-size: 3rem;
+        }
+        
+        .state-single {
+            background: #f3f4f6;
+            border: 2px solid #9ca3af;
+        }
+        
+        .state-pending {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            animation: pulse 2s infinite;
+        }
+        
+        .state-accepted {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+        }
+        
+        .state-cancelled {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+        
+        .state-locked {
+            background: #e0e7ff;
+            border: 2px solid #6366f1;
+        }
+        
+        .state-completed {
+            background: #ddd6fe;
+            border: 2px solid #8b5cf6;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .handshake-animation {
+            animation: shake 0.6s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            50% { transform: translateX(10px) rotate(5deg); }
+            75% { transform: translateX(-5px) rotate(-2deg); }
+        }
+        
+        .hand-left, .hand-right {
+            transition: all 0.3s ease;
+        }
+        
+        .handshake-joined {
+            animation: celebrate 0.5s ease;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1) rotate(0); }
+            50% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+        
+        /* Bet progress */
+        .bet-progress {
+            margin: 15px 0;
+        }
+        
+        .progress-text {
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #6366f1);
+            transition: width 0.3s ease;
+        }
+        
+        /* Participants */
+        .participants {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .participant {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+        }
+        
+        .participant.accepted {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-color: #10b981;
+        }
+        
+        /* Buttons */
+        .bet-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .accept-btn, .leave-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .accept-btn {
+            background: #10b981;
+            color: white;
+        }
+        
+        .leave-btn {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background: #ef4444;
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        /* Test results */
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        /* Toast styles */
+        .bet-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translate(-50%, 0); opacity: 1; }
+            to { transform: translate(-50%, 100%); opacity: 0; }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #6366f1;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🤝 Bet Acceptance System Test</h1>
+        
+        <div class="test-section">
+            <h3>Component Status</h3>
+            <div id="component-status"></div>
+        </div>
+        
+        <!-- Demo Bet Card 1 -->
+        <div class="bet-card" data-bet-id="bet-001" data-max-accepts="3">
+            <div class="bet-header">
+                <div class="bet-title">Lakers vs Warriors</div>
+                <div class="bet-odds">-110</div>
+            </div>
+            
+            <div class="handshake-container state-single" id="handshake-1">
+                <span class="hand-left">🤚</span>
+                <span class="hand-right">✋</span>
+            </div>
+            
+            <div class="bet-progress">
+                <div class="progress-text">Looking for opponents to take the other side...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="participants"></div>
+            
+            <div class="bet-actions">
+                <button class="accept-btn" onclick="acceptTestBet('bet-001')">
+                    🤝 Accept Bet (<span class="accept-count">0</span>/3 spots)
+                </button>
+            </div>
+        </div>
+        
+        <!-- Demo Bet Card 2 (Partially Filled) -->
+        <div class="bet-card" data-bet-id="bet-002" data-max-accepts="5">
+            <div class="bet-header">
+                <div class="bet-title">Cowboys vs Eagles</div>
+                <div class="bet-odds">+150</div>
+            </div>
+            
+            <div class="handshake-container state-pending" id="handshake-2">
+                <span class="hand-left">🤚</span>
+                <span class="hand-right">✋</span>
+            </div>
+            
+            <div class="bet-progress">
+                <div class="progress-text">2/5 spots taken. 3 remaining.</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%"></div>
+                </div>
+            </div>
+            
+            <div class="participants">
+                <div class="participant accepted">✅ @john_doe</div>
+                <div class="participant accepted">✅ @sarah_smith</div>
+            </div>
+            
+            <div class="bet-actions">
+                <button class="accept-btn" onclick="acceptTestBet('bet-002')">
+                    🤝 Accept Bet (<span class="accept-count">2</span>/5 spots)
+                </button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Controls</h3>
+            <button onclick="testAcceptBet()">Test Accept Bet</button>
+            <button onclick="testLeaveBet()">Test Leave Bet</button>
+            <button onclick="testHandshakeAnimation()">Test Animation</button>
+            <button onclick="testToast()">Test Toast Messages</button>
+            <button onclick="runAllTests()">Run All Tests</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-bets">0</div>
+                    <div class="stat-label">Total Bets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="accepted-bets">0</div>
+                    <div class="stat-label">Accepted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="state-changes">0</div>
+                    <div class="stat-label">State Changes</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Results</h3>
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { betAcceptance } from '/js/components/bet-acceptance.js';
+        import { apiService } from '/js/core/services/api-service.js';
+        import { API_ENDPOINTS } from '/js/core/config/api-endpoints.js';
+        
+        // Make available globally
+        window.betAcceptance = betAcceptance;
+        
+        const resultsDiv = document.getElementById('test-results');
+        let stateChangeCount = 0;
+        let acceptedCount = 0;
+        
+        // Mock API responses
+        const originalPost = apiService.post;
+        apiService.post = async function(endpoint) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            if (endpoint.includes('/accept-bet')) {
+                acceptedCount++;
+                return {
+                    success: true,
+                    acceptedCount: acceptedCount,
+                    maxCount: 3,
+                    participant: { username: 'test_user' }
+                };
+            }
+            if (endpoint.includes('/leave-bet')) {
+                acceptedCount = Math.max(0, acceptedCount - 1);
+                return { success: true };
+            }
+            return originalPost.call(this, endpoint);
+        };
+        
+        // Listen for handshake state changes
+        document.addEventListener('handshakeStateChange', (e) => {
+            stateChangeCount++;
+            document.getElementById('state-changes').textContent = stateChangeCount;
+            addResult(`State changed to: ${e.detail.state}`, 'info');
+        });
+        
+        function updateComponentStatus() {
+            const statusDiv = document.getElementById('component-status');
+            const isLoaded = typeof betAcceptance !== 'undefined';
+            
+            statusDiv.innerHTML = `
+                <p>✅ Component Loaded: ${isLoaded}</p>
+                <p>Methods Available: 
+                    ${typeof betAcceptance?.acceptBet === 'function' ? '✅' : '❌'} acceptBet,
+                    ${typeof betAcceptance?.cancelBet === 'function' ? '✅' : '❌'} cancelBet,
+                    ${typeof betAcceptance?.updateHandshakeState === 'function' ? '✅' : '❌'} updateHandshakeState,
+                    ${typeof betAcceptance?.animateHandshake === 'function' ? '✅' : '❌'} animateHandshake
+                </p>
+                <p>Active Bets: ${betAcceptance?.activeBets?.size || 0}</p>
+            `;
+        }
+        
+        window.acceptTestBet = async function(betId) {
+            await betAcceptance.acceptBet(betId);
+            document.getElementById('accepted-bets').textContent = acceptedCount;
+        }
+        
+        window.testAcceptBet = async function() {
+            addResult('Testing accept bet functionality...', 'info');
+            
+            try {
+                // Test with demo bet
+                const betContainer = document.querySelector('[data-bet-id="bet-001"]');
+                betContainer.dataset.userAccepted = 'false';
+                
+                await betAcceptance.handleDemoBetAccept('bet-001', betContainer);
+                
+                addResult('✅ Accept bet works', 'success');
+                
+                // Update stats
+                document.getElementById('total-bets').textContent = '2';
+                document.getElementById('accepted-bets').textContent = 
+                    document.querySelectorAll('[data-user-accepted="true"]').length;
+                    
+            } catch (error) {
+                addResult(`❌ Accept bet failed: ${error.message}`, 'error');
+            }
+        }
+        
+        window.testLeaveBet = async function() {
+            addResult('Testing leave bet functionality...', 'info');
+            
+            try {
+                const betContainer = document.querySelector('[data-bet-id="bet-002"]');
+                betContainer.dataset.userAccepted = 'true';
+                
+                betAcceptance.handleDemoBetCancel('bet-002', betContainer);
+                
+                addResult('✅ Leave bet works', 'success');
+            } catch (error) {
+                addResult(`❌ Leave bet failed: ${error.message}`, 'error');
+            }
+        }
+        
+        window.testHandshakeAnimation = function() {
+            addResult('Testing handshake animations...', 'info');
+            
+            const container = document.getElementById('handshake-1');
+            
+            // Test state changes
+            const states = ['pending', 'accepted', 'completed'];
+            let index = 0;
+            
+            const interval = setInterval(() => {
+                if (index >= states.length) {
+                    clearInterval(interval);
+                    addResult('✅ All animations tested', 'success');
+                    return;
+                }
+                
+                betAcceptance.updateHandshakeState(container, states[index]);
+                betAcceptance.animateHandshake(container);
+                index++;
+            }, 1500);
+        }
+        
+        window.testToast = function() {
+            const types = ['success', 'error', 'warning', 'info'];
+            const messages = [
+                'Bet accepted successfully!',
+                'Failed to accept bet',
+                'Game starting soon',
+                'Processing your request'
+            ];
+            
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index >= types.length) {
+                    clearInterval(interval);
+                    addResult('✅ All toast types tested', 'success');
+                    return;
+                }
+                
+                betAcceptance.showToast(messages[index], types[index]);
+                index++;
+            }, 1000);
+        }
+        
+        window.runAllTests = async function() {
+            resultsDiv.innerHTML = '';
+            addResult('<h4>Running All Tests...</h4>', 'info');
+            
+            // Test 1: Component loaded
+            if (typeof betAcceptance !== 'undefined') {
+                addResult('✅ Component loaded successfully', 'success');
+            } else {
+                addResult('❌ Component not loaded', 'error');
+                return;
+            }
+            
+            // Test 2: Methods exist
+            const methods = [
+                'acceptBet', 'cancelBet', 'updateHandshakeState', 
+                'animateHandshake', 'getCurrentHandshakeState', 'showToast'
+            ];
+            
+            let allMethodsExist = true;
+            methods.forEach(method => {
+                if (typeof betAcceptance[method] !== 'function') {
+                    addResult(`❌ Method ${method} not found`, 'error');
+                    allMethodsExist = false;
+                }
+            });
+            
+            if (allMethodsExist) {
+                addResult('✅ All methods available', 'success');
+            }
+            
+            // Test 3: Handshake states
+            const container = document.createElement('div');
+            betAcceptance.updateHandshakeState(container, 'pending');
+            
+            if (container.classList.contains('state-pending')) {
+                addResult('✅ State management works', 'success');
+            } else {
+                addResult('❌ State management failed', 'error');
+            }
+            
+            // Test 4: Get current state
+            const currentState = betAcceptance.getCurrentHandshakeState(container);
+            if (currentState === 'pending') {
+                addResult('✅ getCurrentHandshakeState works', 'success');
+            } else {
+                addResult('❌ getCurrentHandshakeState failed', 'error');
+            }
+            
+            // Test 5: Accept functionality
+            await testAcceptBet();
+            
+            // Test 6: Leave functionality
+            await testLeaveBet();
+            
+            addResult('<h4>All tests complete!</h4>', 'info');
+        }
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        // Initialize
+        updateComponentStatus();
+        document.getElementById('total-bets').textContent = '2';
+        
+        // Show initial toast
+        setTimeout(() => {
+            betAcceptance.showToast('Bet Acceptance System Ready!', 'success');
+        }, 500);
+    </script>
+</body>
+</html>

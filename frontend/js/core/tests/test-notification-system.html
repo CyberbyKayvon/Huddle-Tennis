@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Notification System</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --surface: #f9fafb;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 10px;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #6366f1;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #4f46e5;
+        }
+        
+        .mock-nav {
+            background: #1f2937;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-item {
+            cursor: pointer;
+            padding: 5px 10px;
+            position: relative;
+        }
+        
+        .nav-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .fa-bell {
+            font-size: 20px;
+        }
+        
+        .notification-preview {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .test-controls {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .test-controls h4 {
+            margin-top: 0;
+        }
+        
+        .notification-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .type-button {
+            padding: 8px;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .type-button:hover {
+            background: #e5e7eb;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        @keyframes highlight {
+            0% { background: rgba(99, 102, 241, 0.2); }
+            100% { background: transparent; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔔 Notification System Test</h1>
+        
+        <!-- Mock Navigation Bar -->
+        <div class="mock-nav">
+            <div>Huddle Platform</div>
+            <div class="nav-item" title="Click to toggle notifications">
+                <i class="fas fa-bell"></i>
+                <span class="nav-badge">0</span>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Component Status</h3>
+            <div id="component-status"></div>
+        </div>
+        
+        <div class="test-controls">
+            <h4>Create Test Notifications</h4>
+            <div class="notification-types">
+                <button class="type-button" onclick="addMockNotification('bet_accepted')">
+                    🤝 Bet Accepted
+                </button>
+                <button class="type-button" onclick="addMockNotification('bet_won')">
+                    🏆 Bet Won
+                </button>
+                <button class="type-button" onclick="addMockNotification('bet_lost')">
+                    😔 Bet Lost
+                </button>
+                <button class="type-button" onclick="addMockNotification('comment')">
+                    💬 New Comment
+                </button>
+                <button class="type-button" onclick="addMockNotification('like')">
+                    👍 New Like
+                </button>
+                <button class="type-button" onclick="addMockNotification('follow')">
+                    👥 New Follower
+                </button>
+                <button class="type-button" onclick="addMockNotification('mention')">
+                    @ Mentioned
+                </button>
+                <button class="type-button" onclick="addMockNotification('payment_received')">
+                    💰 Payment Received
+                </button>
+                <button class="type-button" onclick="addMockNotification('league_invite')">
+                    📨 League Invite
+                </button>
+                <button class="type-button" onclick="addMockNotification('system')">
+                    📢 System Message
+                </button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <button onclick="clearAllNotifications()">Clear All</button>
+                <button onclick="markAllRead()">Mark All Read</button>
+                <button onclick="testToast()">Test Toast</button>
+                <button onclick="testSound()">Test Sound</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Current Notifications</h3>
+            <div class="notification-preview" id="notification-preview">
+                <p style="color: #6b7280; text-align: center;">No notifications yet</p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Results</h3>
+            <div id="test-results"></div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <button onclick="runAllTests()">Run All Tests</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { notificationSystem } from '/js/components/notification-system.js';
+        import { apiService } from '/js/core/services/api-service.js';
+        import { API_ENDPOINTS } from '/js/core/config/api-endpoints.js';
+        
+        // Make available globally
+        window.notificationSystem = notificationSystem;
+        
+        const resultsDiv = document.getElementById('test-results');
+        let mockNotifications = [];
+        let notificationIdCounter = 1;
+        
+        // Mock API responses
+        const originalGet = apiService.get;
+        const originalPut = apiService.put;
+        
+        apiService.get = async function(endpoint) {
+            if (endpoint === API_ENDPOINTS.NOTIFICATIONS.ALL) {
+                return {
+                    success: true,
+                    notifications: mockNotifications,
+                    unreadCount: mockNotifications.filter(n => !n.read).length
+                };
+            }
+            if (endpoint === API_ENDPOINTS.NOTIFICATIONS.UNREAD_COUNT) {
+                return {
+                    success: true,
+                    count: mockNotifications.filter(n => !n.read).length
+                };
+            }
+            return originalGet.call(this, endpoint);
+        };
+        
+        apiService.put = async function(endpoint) {
+            if (endpoint.includes('/api/notifications/') && endpoint.includes('/read')) {
+                const id = endpoint.split('/')[3];
+                const notif = mockNotifications.find(n => n._id === id);
+                if (notif) notif.read = true;
+                return { success: true };
+            }
+            if (endpoint === API_ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ) {
+                mockNotifications.forEach(n => n.read = true);
+                return { success: true };
+            }
+            return originalPut.call(this, endpoint);
+        };
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        function updateComponentStatus() {
+            const statusDiv = document.getElementById('component-status');
+            const isLoaded = typeof notificationSystem !== 'undefined';
+            
+            statusDiv.innerHTML = `
+                <p>✅ Component Loaded: ${isLoaded}</p>
+                <p>Notifications: ${notificationSystem.notifications.length}</p>
+                <p>Unread Count: ${notificationSystem.unreadCount}</p>
+                <p>Panel Open: ${notificationSystem.isOpen}</p>
+            `;
+        }
+        
+        const notificationMessages = {
+            'bet_accepted': 'Your bet has been accepted by @john_doe',
+            'bet_won': 'Congratulations! You won your bet on Lakers vs Warriors',
+            'bet_lost': 'Your bet on Cowboys vs Eagles was unsuccessful',
+            'comment': 'Mike commented on your post: "Great pick!"',
+            'like': 'Sarah liked your prediction',
+            'follow': 'Alex started following you',
+            'mention': '@jessica mentioned you in a post',
+            'payment_received': 'You received $50 from @tommy',
+            'league_invite': 'You\'ve been invited to join "High Rollers League"',
+            'system': 'System maintenance scheduled for tonight at 2 AM'
+        };
+        
+        window.addMockNotification = function(type) {
+            const notification = {
+                _id: `notif_${notificationIdCounter++}`,
+                type: type,
+                message: notificationMessages[type] || 'New notification',
+                read: false,
+                createdAt: new Date().toISOString(),
+                data: {
+                    postId: 'post_123'
+                }
+            };
+            
+            mockNotifications.unshift(notification);
+            notificationSystem.loadNotifications();
+            updateNotificationPreview();
+            addResult(`Added ${type} notification`, 'success');
+            
+            // Update badge
+            notificationSystem.unreadCount = mockNotifications.filter(n => !n.read).length;
+            notificationSystem.updateNotificationBadge();
+        };
+        
+        window.clearAllNotifications = function() {
+            mockNotifications = [];
+            notificationSystem.loadNotifications();
+            updateNotificationPreview();
+            addResult('Cleared all notifications', 'info');
+        };
+        
+        window.markAllRead = function() {
+            notificationSystem.markAllAsRead();
+            updateNotificationPreview();
+        };
+        
+        window.testToast = function() {
+            notificationSystem.showToast('This is a test toast notification!', 'success');
+            addResult('Toast notification shown', 'success');
+        };
+        
+        window.testSound = function() {
+            notificationSystem.playNotificationSound();
+            addResult('Notification sound played', 'success');
+        };
+        
+        function updateNotificationPreview() {
+            const preview = document.getElementById('notification-preview');
+            
+            if (mockNotifications.length === 0) {
+                preview.innerHTML = '<p style="color: #6b7280; text-align: center;">No notifications yet</p>';
+                return;
+            }
+            
+            preview.innerHTML = mockNotifications.map(n => `
+                <div style="padding: 10px; border-bottom: 1px solid #e5e7eb; ${!n.read ? 'background: #f9fafb;' : ''}">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>${notificationSystem.getNotificationIcon(n.type)} ${n.message}</span>
+                        ${!n.read ? '<span style="color: #6366f1;">●</span>' : ''}
+                    </div>
+                    <small style="color: #6b7280;">${notificationSystem.getTimeAgo(new Date(n.createdAt))}</small>
+                </div>
+            `).join('');
+        }
+        
+        window.runAllTests = async function() {
+            clearResults();
+            addResult('<h4>Running All Tests...</h4>', 'info');
+            
+            // Test 1: Component loaded
+            if (typeof notificationSystem !== 'undefined') {
+                addResult('✅ Component loaded successfully', 'success');
+            } else {
+                addResult('❌ Component not loaded', 'error');
+                return;
+            }
+            
+            // Test 2: UI creation
+            const panel = document.getElementById('notificationPanel');
+            if (panel) {
+                addResult('✅ Notification panel created', 'success');
+            } else {
+                addResult('❌ Notification panel not created', 'error');
+            }
+            
+            // Test 3: Load notifications
+            await notificationSystem.loadNotifications();
+            addResult('✅ Load notifications works', 'success');
+            
+            // Test 4: Add test notification
+            addMockNotification('bet_accepted');
+            if (notificationSystem.notifications.length > 0) {
+                addResult('✅ Notifications added successfully', 'success');
+            } else {
+                addResult('❌ Failed to add notifications', 'error');
+            }
+            
+            // Test 5: Icon mapping
+            const icons = ['bet_accepted', 'comment', 'like', 'payment_received'];
+            let allIconsWork = true;
+            icons.forEach(type => {
+                const icon = notificationSystem.getNotificationIcon(type);
+                if (!icon || icon === '🔔') {
+                    allIconsWork = false;
+                }
+            });
+            if (allIconsWork) {
+                addResult('✅ All notification icons work', 'success');
+            } else {
+                addResult('❌ Some notification icons missing', 'error');
+            }
+            
+            // Test 6: Time ago function
+            const now = new Date();
+            const timeTests = [
+                { date: new Date(now - 30000), expected: 'just now' },
+                { date: new Date(now - 120000), expected: '2m ago' },
+                { date: new Date(now - 3700000), expected: '1h ago' }
+            ];
+            
+            let timeAgoWorks = true;
+            timeTests.forEach(test => {
+                const result = notificationSystem.getTimeAgo(test.date);
+                if (result !== test.expected) {
+                    timeAgoWorks = false;
+                }
+            });
+            
+            if (timeAgoWorks) {
+                addResult('✅ Time ago formatting works', 'success');
+            } else {
+                addResult('⚠️ Time ago formatting has issues', 'warning');
+            }
+            
+            // Test 7: Badge update
+            notificationSystem.updateNotificationBadge();
+            addResult('✅ Badge update works', 'success');
+            
+            addResult('<h4>All tests complete!</h4>', 'info');
+            updateComponentStatus();
+        };
+        
+        window.clearResults = function() {
+            resultsDiv.innerHTML = '';
+        };
+        
+        // Initialize
+        updateComponentStatus();
+        
+        // Add some initial test notifications
+        setTimeout(() => {
+            addMockNotification('bet_accepted');
+            addMockNotification('comment');
+            addMockNotification('payment_received');
+        }, 500);
+    </script>
+</body>
+</html>

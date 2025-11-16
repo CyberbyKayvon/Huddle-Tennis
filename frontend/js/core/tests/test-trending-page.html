@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Trending Page</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --bg-tertiary: #e5e7eb;
+            --surface: #f9fafb;
+            --text: #1f2937;
+            --text-primary: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --gradient-gold: linear-gradient(135deg, #FFD700, #FFA500);
+            --gradient-success: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #6366f1;
+        }
+        
+        /* Main trending page container */
+        .trending-page-container {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            min-height: 500px;
+            margin: 20px 0;
+        }
+        
+        /* Sport filter tabs */
+        .sport-filter-tab {
+            transition: all 0.2s;
+        }
+        
+        .sport-filter-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .sport-filter-tab.active {
+            transform: scale(1.05);
+        }
+        
+        /* Test controls */
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6366f1;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+        
+        /* Mock feed controller */
+        .mock-feed {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="test-container">
+        <h1>📈 Trending Page Test</h1>
+        
+        <div class="test-section">
+            <h3>Component Status</h3>
+            <div id="component-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Live Trending Page</h3>
+            <div class="trending-page-container" id="trending-page-target">
+                <!-- Trending page will render here -->
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Controls</h3>
+            <div class="test-controls">
+                <button onclick="initializePage()">Initialize Page</button>
+                <button onclick="testSportSwitch()">Test Sport Switching</button>
+                <button onclick="testRefresh()">Test Refresh</button>
+                <button onclick="testFallback()">Test Fallback Data</button>
+                <button onclick="addMockData()">Add Mock Data</button>
+                <button onclick="testAllSports()">Cycle All Sports</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="trending-count">0</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="active-sport">all</div>
+                    <div class="stat-label">Active Sport</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="api-calls">0</div>
+                    <div class="stat-label">API Calls</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="load-status">Ready</div>
+                    <div class="stat-label">Status</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Mock Feed Controller</h3>
+            <div class="mock-feed">
+                <p>This simulates the feed controller for testing hashtag searches</p>
+                <div id="mock-feed-output"></div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Results</h3>
+            <div id="test-results"></div>
+            <button onclick="runAllTests()" style="margin-top: 15px;">Run All Tests</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { trendingPage } from '/js/components/trending-page.js';
+        import { apiService } from '/js/core/services/api-service.js';
+        import { API_ENDPOINTS } from '/js/core/config/api-endpoints.js';
+        
+        // Make available globally
+        window.trendingPage = trendingPage;
+        
+        const resultsDiv = document.getElementById('test-results');
+        let apiCallCount = 0;
+        
+        // Mock feed controller
+        window.feedController = {
+            clearSearch: function() {
+                addResult('Feed controller: clearSearch called', 'info');
+                document.getElementById('mock-feed-output').innerHTML = 
+                    '<p style="color: green;">✅ Back to feed clicked</p>';
+            },
+            searchHashtag: function(hashtag) {
+                addResult(`Feed controller: searchHashtag called with ${hashtag}`, 'info');
+                document.getElementById('mock-feed-output').innerHTML = 
+                    `<p style="color: blue;">🔍 Searching for: ${hashtag}</p>`;
+            }
+        };
+        
+        // Mock trending data
+        const mockTrendingData = {
+            success: true,
+            trending: [
+                {
+                    category: 'NFL • Live',
+                    title: '#ChiefsKingdom',
+                    stats: '52.3K posts',
+                    shortDescription: 'Chiefs dominating in the playoffs',
+                    sport: 'NFL',
+                    timestamp: new Date()
+                },
+                {
+                    category: 'NBA • Trending',
+                    title: '#LakeShow',
+                    stats: '38.1K posts',
+                    shortDescription: 'Lakers on a winning streak',
+                    sport: 'NBA',
+                    timestamp: new Date(Date.now() - 30 * 60000)
+                },
+                {
+                    category: 'MLB • Hot',
+                    title: '#SpringTraining',
+                    stats: '15.7K posts',
+                    shortDescription: 'Teams preparing for 2025 season',
+                    sport: 'MLB',
+                    timestamp: new Date(Date.now() - 60 * 60000)
+                },
+                {
+                    category: 'Betting • Trending',
+                    title: '#LockOfTheWeek',
+                    stats: '25.2K predictions',
+                    shortDescription: 'Top picks for Sunday games',
+                    sport: 'Betting',
+                    timestamp: new Date(Date.now() - 120 * 60000)
+                },
+                {
+                    category: 'Community • Discussion',
+                    title: '#FantasyFootball',
+                    stats: '18.9K posts',
+                    shortDescription: 'Playoff lineup discussions',
+                    sport: 'Community',
+                    timestamp: new Date(Date.now() - 180 * 60000)
+                }
+            ],
+            lastUpdate: new Date().toISOString()
+        };
+        
+        // Mock API responses
+        const originalGet = apiService.get;
+        apiService.get = async function(endpoint) {
+            apiCallCount++;
+            document.getElementById('api-calls').textContent = apiCallCount;
+            
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            if (endpoint === API_ENDPOINTS.TRENDING.LIVE) {
+                return mockTrendingData;
+            }
+            
+            return originalGet.call(this, endpoint);
+        };
+        
+        function updateComponentStatus() {
+            const statusDiv = document.getElementById('component-status');
+            const isLoaded = typeof trendingPage !== 'undefined';
+            
+            statusDiv.innerHTML = `
+                <p>✅ Component Loaded: ${isLoaded}</p>
+                <p>Active Sport: ${trendingPage.activeSport}</p>
+                <p>Total Trending Items: ${trendingPage.allTrending.length}</p>
+                <p>Is Loading: ${trendingPage.isLoading ? 'Yes' : 'No'}</p>
+                <p>Methods Available: 
+                    ${typeof trendingPage?.render === 'function' ? '✅' : '❌'} render,
+                    ${typeof trendingPage?.initialize === 'function' ? '✅' : '❌'} initialize,
+                    ${typeof trendingPage?.switchSport === 'function' ? '✅' : '❌'} switchSport,
+                    ${typeof trendingPage?.refreshTrending === 'function' ? '✅' : '❌'} refreshTrending
+                </p>
+            `;
+        }
+        
+        window.initializePage = async function() {
+            addResult('Initializing trending page...', 'info');
+            
+            const container = document.getElementById('trending-page-target');
+            container.innerHTML = trendingPage.render();
+            
+            await trendingPage.initialize();
+            
+            addResult('✅ Trending page initialized', 'success');
+            updateStats();
+        }
+        
+        window.testSportSwitch = async function() {
+            addResult('Testing sport switching...', 'info');
+            
+            const sports = ['nfl', 'nba', 'mlb', 'betting', 'community', 'all'];
+            
+            for (const sport of sports) {
+                trendingPage.switchSport(sport);
+                addResult(`✅ Switched to ${sport}`, 'success');
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            updateStats();
+        }
+        
+        window.testRefresh = async function() {
+            addResult('Testing refresh functionality...', 'info');
+            await trendingPage.refreshTrending();
+            addResult('✅ Refresh completed', 'success');
+            updateStats();
+        }
+        
+        window.testFallback = function() {
+            addResult('Testing fallback data...', 'info');
+            trendingPage.allTrending = trendingPage.getFallbackTrending();
+            trendingPage.renderTrendingContent();
+            addResult('✅ Fallback data loaded', 'success');
+            updateStats();
+        }
+        
+        window.addMockData = function() {
+            addResult('Adding more mock data...', 'info');
+            
+            const newItems = [
+                {
+                    category: 'NFL • Breaking',
+                    title: '#BillsMafia',
+                    stats: '42.1K posts',
+                    shortDescription: 'Bills clinch division title',
+                    sport: 'NFL',
+                    timestamp: new Date()
+                },
+                {
+                    category: 'NBA • Hot',
+                    title: '#Celtics',
+                    stats: '31.5K posts',
+                    shortDescription: 'Boston extends winning streak to 10',
+                    sport: 'NBA',
+                    timestamp: new Date()
+                }
+            ];
+            
+            trendingPage.allTrending.push(...newItems);
+            trendingPage.renderTrendingContent();
+            addResult(`✅ Added ${newItems.length} items`, 'success');
+            updateStats();
+        }
+        
+        window.testAllSports = async function() {
+            addResult('Cycling through all sports...', 'info');
+            
+            const sports = trendingPage.sports;
+            for (const sport of sports) {
+                trendingPage.switchSport(sport);
+                document.getElementById('active-sport').textContent = sport;
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+            
+            addResult('✅ All sports tested', 'success');
+        }
+        
+        window.updateStats = function() {
+            document.getElementById('trending-count').textContent = trendingPage.allTrending.length;
+            document.getElementById('active-sport').textContent = trendingPage.activeSport;
+            document.getElementById('load-status').textContent = trendingPage.isLoading ? 'Loading...' : 'Ready';
+        }
+        
+        window.runAllTests = async function() {
+            resultsDiv.innerHTML = '';
+            addResult('<h4>Running All Tests...</h4>', 'info');
+            
+            // Test 1: Component loaded
+            if (typeof trendingPage !== 'undefined') {
+                addResult('✅ Component loaded successfully', 'success');
+            } else {
+                addResult('❌ Component not loaded', 'error');
+                return;
+            }
+            
+            // Test 2: Render method
+            const html = trendingPage.render();
+            if (html && html.includes('trending-page')) {
+                addResult('✅ Render method works', 'success');
+            } else {
+                addResult('❌ Render method failed', 'error');
+            }
+            
+            // Test 3: Initialize
+            const container = document.getElementById('trending-page-target');
+            container.innerHTML = html;
+            await trendingPage.initialize();
+            
+            if (trendingPage.allTrending.length > 0) {
+                addResult(`✅ Loaded ${trendingPage.allTrending.length} trending items`, 'success');
+            } else {
+                addResult('⚠️ No trending items loaded', 'warning');
+            }
+            
+            // Test 4: Sport switching
+            const initialSport = trendingPage.activeSport;
+            trendingPage.switchSport('nfl');
+            if (trendingPage.activeSport === 'nfl') {
+                addResult('✅ Sport switching works', 'success');
+            } else {
+                addResult('❌ Sport switching failed', 'error');
+            }
+            trendingPage.switchSport(initialSport);
+            
+            // Test 5: Time ago function
+            const testDate = new Date(Date.now() - 5 * 60000); // 5 minutes ago
+            const timeAgo = trendingPage.getTimeAgo(testDate);
+            if (timeAgo === '5m ago') {
+                addResult('✅ Time ago function works', 'success');
+            } else {
+                addResult(`⚠️ Time ago returned: ${timeAgo}`, 'warning');
+            }
+            
+            // Test 6: Parse engagement
+            const engagement = trendingPage.parseEngagement('12.5K posts');
+            if (engagement === 12500) {
+                addResult('✅ Parse engagement works', 'success');
+            } else {
+                addResult(`❌ Parse engagement failed: ${engagement}`, 'error');
+            }
+            
+            // Test 7: XSS prevention
+            const maliciousItem = {
+                category: '<' + 'script>alert("XSS")<' + '/script>',
+                title: '<img src=x onerror="alert(1)">',
+                stats: '1K posts',
+                shortDescription: '<' + 'script>alert("desc")<' + '/script>',
+                sport: 'NFL',
+                timestamp: new Date()
+            };
+            
+            trendingPage.allTrending = [maliciousItem];
+            trendingPage.renderTrendingContent();
+            
+            const content = document.getElementById('trending-content-container');
+            if (content && !content.innerHTML.includes('script>') && !content.innerHTML.includes('onerror')) {
+                addResult('✅ XSS prevention working', 'success');
+            } else {
+                addResult('❌ XSS vulnerability detected', 'error');
+            }
+            
+            // Restore data
+            await trendingPage.loadAllTrending();
+            
+            addResult('<h4>All tests complete!</h4>', 'info');
+            updateStats();
+        }
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        // Initialize on load
+        updateComponentStatus();
+        
+        // Auto-initialize after a short delay
+        setTimeout(() => {
+            initializePage();
+        }, 500);
+    </script>
+</body>
+</html>

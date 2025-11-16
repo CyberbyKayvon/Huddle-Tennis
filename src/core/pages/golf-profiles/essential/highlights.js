@@ -1,0 +1,452 @@
+// Essential: highlights
+const BaseGolfProfile = require('../../../base/BaseGolfProfile');
+
+class highlights extends BaseGolfProfile {
+    constructor() {
+        super();
+        this.pageName = 'highlights';
+    }
+    
+    generateHTML(golferData) {
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${golferData.golferName} - Video Highlights</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, 'SF Pro Display', sans-serif;
+            background: #0a0f0d;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        /* Background */
+        .bg-gradient {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #0f4c3a 0%, #0a0f0d 100%);
+            z-index: -1;
+        }
+        
+        /* Navigation */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 15, 13, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+        
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a.active {
+            color: #10b981;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #10b981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+        
+        /* Featured Video */
+        .featured-video {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .featured-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .featured-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #10b981;
+        }
+        
+        .featured-badge {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Video Grid */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease 0.4s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .video-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .video-thumbnail {
+            position: relative;
+            padding-bottom: 56.25%;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .play-button {
+            width: 60px;
+            height: 60px;
+            background: rgba(16, 185, 129, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .video-card:hover .play-overlay {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .video-card:hover .play-button {
+            transform: scale(1.1);
+            background: #10b981;
+        }
+        
+        .video-info {
+            padding: 1.5rem;
+        }
+        
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+        }
+        
+        .video-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .video-stats {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        /* Upload Section */
+        .upload-section {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 2px dashed rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-text {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 1.5rem;
+        }
+        
+        .upload-btn {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    
+    <header class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">⛳ ${golferData.golferName}</div>
+            <nav class="nav-links">
+                <a href="index.html">Overview</a>
+                <a href="stats-dashboard.html">Stats</a>
+                <a href="tournament-history.html">Tournaments</a>
+                <a href="academic-info.html">Academics</a>
+                <a href="contact.html">Contact</a>
+                <a href="highlights.html" class="active">Highlights</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Video Highlights</h1>
+            <p class="page-subtitle">Swing analysis, tournament footage, and training videos</p>
+        </div>
+        
+        <!-- Featured Video -->
+        <div class="featured-video">
+            <div class="featured-header">
+                <h2 class="featured-title">Featured: Championship Winning Shot</h2>
+                <span class="featured-badge">Latest Upload</span>
+            </div>
+            <div class="video-wrapper" style="background: url('https://images.unsplash.com/photo-1633328991335-86fb60a0ec9b?w=800') center/cover; cursor: pointer;" onclick="alert('Featured video would play here')">
+                <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);">
+                    <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                        <i class="fas fa-play" style="margin-left: 5px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Video Grid -->
+        <div class="videos-grid">
+            <div class="video-card" onclick="alert('Video player would open here')">
+                <div class="video-thumbnail" style="background: url('https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=400') center/cover;">
+                    <div class="play-overlay">
+                        <div class="play-button"><i class="fas fa-play"></i></div>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title">Perfect Iron Shot - State Championship</h3>
+                    <div class="video-meta">
+                        <span class="video-date"><i class="fas fa-calendar"></i> Dec 2024</span>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> 342</span>
+                            <span><i class="fas fa-thumbs-up"></i> 45</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-card" onclick="alert('Video player would open here')">
+                <div class="video-thumbnail" style="background: url('https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?w=400') center/cover;">
+                    <div class="play-overlay">
+                        <div class="play-button"><i class="fas fa-play"></i></div>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title">Driver Technique - Slow Motion</h3>
+                    <div class="video-meta">
+                        <span class="video-date"><i class="fas fa-calendar"></i> Nov 2024</span>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> 289</span>
+                            <span><i class="fas fa-thumbs-up"></i> 38</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-card" onclick="alert('Video player would open here')">
+                <div class="video-thumbnail" style="background: url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=400') center/cover;">
+                    <div class="play-overlay">
+                        <div class="play-button"><i class="fas fa-play"></i></div>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title">Winning Putt - AAT Fall Masters</h3>
+                    <div class="video-meta">
+                        <span class="video-date"><i class="fas fa-calendar"></i> Sep 2024</span>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> 512</span>
+                            <span><i class="fas fa-thumbs-up"></i> 67</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="video-card" onclick="alert('Video player would open here')">
+                <div class="video-thumbnail" style="background: url('https://images.unsplash.com/photo-1592919505780-303950717480?w=400') center/cover;">
+                    <div class="play-overlay">
+                        <div class="play-button"><i class="fas fa-play"></i></div>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title">Course Management Highlights</h3>
+                    <div class="video-meta">
+                        <span class="video-date"><i class="fas fa-calendar"></i> Aug 2024</span>
+                        <div class="video-stats">
+                            <span><i class="fas fa-eye"></i> 198</span>
+                            <span><i class="fas fa-thumbs-up"></i> 23</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3 class="upload-title">Add More Videos</h3>
+            <p class="upload-text">Upload swing analysis, tournament highlights, or training footage</p>
+            <button class="upload-btn">Upload Video</button>
+        </div>
+    </main>
+</body>
+</html>`;
+    }
+}
+
+module.exports = highlights;

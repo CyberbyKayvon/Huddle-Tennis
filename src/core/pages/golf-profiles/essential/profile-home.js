@@ -1,0 +1,509 @@
+const BaseGolfProfile = require('../../../base/BaseGolfProfile');
+
+class profilehome extends BaseGolfProfile {
+    constructor() {
+        super();
+        this.pageName = 'profile-home';
+    }
+    
+    generateHTML(golferData) {
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${golferData.golferName} - Elite Junior Golf Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+            background: #0a0f0d;
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(52, 211, 153, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+            animation: gradientShift 20s ease infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+        }
+        
+        /* Glass Navigation */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 15, 13, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+        
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #10b981;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-contact {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-contact:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 100px 2rem 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .hero-text h1 {
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #10b981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .hero-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+        
+        .hero-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .hero-meta i {
+            color: #10b981;
+        }
+        
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+            background: rgba(16, 185, 129, 0.05);
+            border-color: #10b981;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .hero-visual {
+            position: relative;
+            animation: fadeIn 1s ease 0.3s both;
+        }
+        
+        .visual-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 30px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visual-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .ranking-display {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ranking-number {
+            font-size: 6rem;
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .ranking-label {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 1rem;
+        }
+        
+        /* Achievements Section */
+        .achievements {
+            padding: 80px 2rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .achievements-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff, #10b981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #10b981, #34d399);
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+        
+        .achievement-card:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .achievement-card:hover {
+            transform: translateX(10px);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .achievement-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .achievement-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #10b981;
+        }
+        
+        .achievement-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    
+    <header class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">⛳ ${golferData.golferName}</div>
+            <nav class="nav-links">
+                <a href="index.html" class="active">Overview</a>
+                <a href="stats-dashboard.html">Stats</a>
+                <a href="tournament-history.html">Tournaments</a>
+                <a href="academic-info.html">Academics</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn-contact">Contact Coach</button>
+            </div>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>${golferData.golferName}</h1>
+                <div class="hero-meta">
+                    <span><i class="fas fa-user"></i> Age ${golferData.age}</span>
+                    <span><i class="fas fa-graduation-cap"></i> Class of ${golferData.graduationYear}</span>
+                    <span><i class="fas fa-map-marker-alt"></i> ${golferData.hometown}</span>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-box">
+                        <div class="stat-value">${golferData.scoringAvg}</div>
+                        <div class="stat-label">Scoring Average</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${golferData.lowRound}</div>
+                        <div class="stat-label">Low Round</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${golferData.totalBirdies || '10'}</div>
+                        <div class="stat-label">Total Birdies</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${golferData.points2024}</div>
+                        <div class="stat-label">2024 Points</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="visual-card">
+                    <div class="ranking-display">
+                        <div class="ranking-number">#${golferData.nationalRank}</div>
+                        <div class="ranking-label">AAT National Ranking</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="achievements">
+        <div class="achievements-container">
+            <div class="section-header">
+                <h2>2024 Season Highlights</h2>
+            </div>
+            <div class="achievement-grid">
+                <div class="achievement-card">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-title">Tournament Winner</div>
+                    <div class="achievement-desc">1st Place - Prep Tour: Metro 349 at Texas 9</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🥉</div>
+                    <div class="achievement-title">AAT Fall Masters</div>
+                    <div class="achievement-desc">3rd Place - Srixon and Nike Fall Masters (350 points)</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">⛳</div>
+                    <div class="achievement-title">Consistency</div>
+                    <div class="achievement-desc">4 Top-10 Finishes in AAT Events</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">📊</div>
+                    <div class="achievement-title">Birdie Machine</div>
+                    <div class="achievement-desc">${golferData.totalBirdies || '10'} Birdies • ${golferData.parBreakers || '7.9%'} Par Breakers</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">📈</div>
+                    <div class="achievement-title">Rising Star</div>
+                    <div class="achievement-desc">Ranked #${golferData.nationalRank} in AAT Boys 12 & Under</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🎯</div>
+                    <div class="achievement-title">Tournament Ready</div>
+                    <div class="achievement-desc">${golferData.events2024 || '4'} AAT Events • ${golferData.tournamentsPlayed || '6'} Total Events</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>`;
+    }
+}
+
+module.exports = profilehome;

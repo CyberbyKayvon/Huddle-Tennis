@@ -1,0 +1,1459 @@
+﻿/* ==================== RESPONSIVE BREAKPOINTS ==================== */
+
+/* Large Desktop (1440px+) */
+@media (min-width: 1441px) {
+    .app-container {
+        grid-template-columns: 320px 1fr 400px;
+        max-width: 1800px;
+    }
+    
+    .feed-posts {
+        padding: 1.5rem;
+    }
+    
+    .post {
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    }
+}
+
+/* Desktop to Laptop (1280px) */
+@media (max-width: 1280px) {
+    .app-container {
+        grid-template-columns: 240px 1fr 320px;
+    }
+    
+    .sidebar-left {
+        padding: 1rem;
+    }
+    
+    .sidebar-right {
+        padding: 1.5rem 1rem;
+    }
+    
+    .logo-section {
+        margin-bottom: 1rem;
+    }
+    
+    .logo-icon {
+        width: 200px;
+        height: 200px;
+        margin: -65px 0 -65px 0;
+    }
+    
+    .logo-text {
+        font-size: 1.8rem;
+    }
+    
+    .nav-item {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .create-post-btn {
+        padding: 0.875rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Tablet Landscape (1024px) */
+@media (max-width: 1024px) {
+    .app-container {
+        grid-template-columns: 80px 1fr 280px;
+    }
+    
+    /* Collapsed Sidebar */
+    .sidebar-left {
+        padding: 1rem 0.5rem;
+        overflow-x: hidden;
+    }
+    
+    .logo-section {
+        padding-bottom: 0.5rem;
+    }
+    
+    .logo {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .logo-icon {
+        width: 50px;
+        height: 50px;
+        margin: 0;
+    }
+    
+    .logo-text {
+        display: none;
+    }
+    
+    /* Icon-only navigation */
+    .nav-menu {
+        margin-bottom: 1rem;
+    }
+    
+    .nav-group-label {
+        display: none;
+    }
+    
+    .nav-item {
+        justify-content: center;
+        padding: 0.75rem;
+        position: relative;
+    }
+    
+    .nav-item span,
+    .nav-badge {
+        display: none;
+    }
+    
+    .nav-item i {
+        font-size: 1.5rem;
+    }
+    
+    /* Tooltip on hover for collapsed nav */
+    .nav-item::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        white-space: nowrap;
+        font-size: 0.875rem;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--transition-fast);
+        margin-left: 0.5rem;
+        z-index: 1000;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .nav-item:hover::after {
+        opacity: 1;
+    }
+    
+    /* Circular create button */
+    .create-post-btn {
+        width: 56px;
+        height: 56px;
+        padding: 0;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        margin: 1rem auto;
+    }
+    
+    .create-post-btn span {
+        display: none;
+    }
+    
+    .create-post-btn i {
+        font-size: 1.5rem;
+    }
+    
+    /* Collapsed user profile */
+    .user-profile-section {
+        padding: 1rem 0.5rem;
+    }
+    
+    .user-profile {
+        justify-content: center;
+    }
+    
+    .user-info,
+    .user-stats,
+    .coins-display > div:first-child,
+    #userCoinsBalance span {
+        display: none;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .coins-display {
+        padding: 0.5rem;
+    }
+    
+    #userCoinsBalance {
+        font-size: 1rem;
+    }
+    
+    /* Adjust right sidebar */
+    .sidebar-right {
+        padding: 1.5rem 1rem;
+    }
+    
+    .trending-section,
+    .live-games-widget,
+    .follow-suggestions {
+        padding: 1rem;
+    }
+}
+
+/* Tablet Portrait (768px) */
+@media (max-width: 768px) {
+    .app-container {
+        grid-template-columns: 1fr;
+        padding-bottom: 60px; /* Space for mobile nav */
+    }
+    
+    /* Hide sidebars on mobile */
+    .sidebar-left,
+    .sidebar-right {
+        display: none;
+    }
+    
+    /* Mobile Navigation Bar */
+    .mobile-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        padding: 0.5rem;
+        z-index: 1000;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+    
+    .mobile-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.7rem;
+        transition: all var(--transition-fast);
+        position: relative;
+    }
+    
+    .mobile-nav-item i {
+        font-size: 1.25rem;
+        transition: transform var(--transition-fast);
+    }
+    
+    .mobile-nav-item.active {
+        color: var(--primary);
+    }
+    
+    .mobile-nav-item.active i {
+        transform: scale(1.1);
+    }
+    
+    .mobile-nav-item::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: 20%;
+        right: 20%;
+        height: 2px;
+        background: var(--primary);
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+    }
+    
+    .mobile-nav-item.active::before {
+        opacity: 1;
+    }
+    
+    /* Mobile Feed Adjustments */
+    .main-feed {
+        border: none;
+    }
+    
+    .feed-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    .feed-tabs {
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .feed-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .feed-tab {
+        padding: 1rem;
+        min-width: max-content;
+        font-size: 0.875rem;
+    }
+    
+    /* Mobile Post Styles */
+    .create-post-area {
+        margin: 0.5rem;
+        padding: 1rem;
+        border-radius: 12px;
+    }
+    
+    .post-composer {
+        gap: 0.75rem;
+    }
+    
+    .composer-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .post-input {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+    
+    .post-options {
+        gap: 0.5rem;
+    }
+    
+    .post-option {
+        padding: 0.75rem;
+    }
+    
+    .post-submit {
+        padding: 0.625rem 1.5rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Mobile Posts */
+    .feed-posts {
+        padding: 0.5rem;
+    }
+    
+    .post {
+        margin: 0 0 1rem 0;
+        padding: 1rem;
+        border-radius: 12px;
+    }
+    
+    .post-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .post-content {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    /* Mobile Interactions */
+    .interaction-group {
+        gap: 0.25rem;
+        flex: 1;
+        justify-content: space-around;
+    }
+    
+    .interaction-btn {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .interaction-btn i {
+        font-size: 1.25rem;
+    }
+    
+    .interaction-btn span {
+        font-size: 0.7rem;
+    }
+    
+    /* Mobile Modals */
+    .modal-overlay {
+        padding: 0;
+    }
+    
+    .modal-content {
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+        border-radius: 0;
+        flex-shrink: 0;
+    }
+    
+    .modal-title {
+        font-size: 1.25rem;
+    }
+    
+    .modal-body {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .sports-tabs {
+        padding: 0.375rem;
+        gap: 0.25rem;
+    }
+    
+    .sport-tab {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .game-card {
+        padding: 1rem;
+    }
+    
+    /* Mobile Bet Challenge */
+    .bet-challenge {
+        padding: 0.75rem;
+    }
+    
+    .bet-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+    
+    .handshake-container {
+        align-self: center;
+        margin: 0.5rem 0;
+    }
+    
+    .bet-progress {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .accept-btn,
+    .cancel-btn {
+        width: 100%;
+    }
+    
+    /* Mobile Prediction Card */
+    .prediction-card {
+        padding: 0.75rem;
+    }
+    
+    .game-matchup {
+        padding: 0.75rem;
+        gap: 1rem;
+    }
+    
+    .team-logo {
+        width: 36px;
+        height: 36px;
+        font-size: 1.25rem;
+    }
+    
+    .betting-lines {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .line-item {
+        padding: 0.375rem;
+    }
+    
+    .line-label {
+        font-size: 0.65rem;
+    }
+    
+    .line-value {
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Landscape */
+@media (max-width: 768px) and (orientation: landscape) {
+    .mobile-nav {
+        padding: 0.25rem;
+    }
+    
+    .mobile-nav-item {
+        padding: 0.375rem;
+        font-size: 0.65rem;
+    }
+    
+    .mobile-nav-item i {
+        font-size: 1rem;
+    }
+    
+    .feed-header {
+        padding: 0;
+    }
+    
+    .feed-tab {
+        padding: 0.75rem;
+    }
+    
+    .modal-content {
+        max-height: 90vh;
+    }
+}
+
+/* Small Mobile (480px) */
+@media (max-width: 480px) {
+    /* Ultra compact feed tabs */
+    .feed-tab {
+        padding: 0.875rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .feed-tab i {
+        display: none;
+    }
+    
+    /* Compact post header */
+    .post-header {
+        gap: 0.75rem;
+    }
+    
+    .post-author {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.125rem;
+    }
+    
+    .author-handle,
+    .post-time {
+        font-size: 0.7rem;
+    }
+    
+    /* Stack betting lines on very small screens */
+    .betting-lines {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Compact interactions */
+    .interaction-btn {
+        padding: 0.375rem;
+    }
+    
+    .interaction-btn span {
+        display: none;
+    }
+    
+    /* Compact sections */
+    .section-title {
+        font-size: 1rem;
+    }
+    
+    .trending-title {
+        font-size: 0.875rem;
+    }
+    
+    .trending-stats {
+        font-size: 0.7rem;
+    }
+    
+    /* Compact game matchup */
+    .game-matchup {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .vs-divider {
+        margin: 0.5rem 0;
+    }
+    
+    /* Floating Action Button for mobile */
+    .fab-container {
+        display: block;
+        position: fixed;
+        bottom: 70px;
+        right: 15px;
+        z-index: 999;
+    }
+    
+    .fab-button {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+}
+
+/* Ultra Small Mobile (360px) */
+@media (max-width: 360px) {
+    .post {
+        padding: 0.75rem;
+    }
+    
+    .post-content {
+        font-size: 0.875rem;
+    }
+    
+    .create-post-area {
+        padding: 0.75rem;
+    }
+    
+    .post-input {
+        font-size: 0.875rem;
+        padding: 0.625rem;
+    }
+    
+    .modal-title {
+        font-size: 1.1rem;
+    }
+    
+    .game-card {
+        padding: 0.75rem;
+    }
+}
+
+/* ==================== TOUCH OPTIMIZATIONS ==================== */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase touch targets */
+    .nav-item,
+    .interaction-btn,
+    .post-option,
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Remove hover effects on touch devices */
+    .post:hover,
+    .game-card:hover,
+    .trending-item:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    /* Add touch feedback */
+    .interaction-btn:active,
+    .post-option:active,
+    button:active {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+    
+    /* Improve scroll performance */
+    .feed-posts {
+        -webkit-overflow-scrolling: touch;
+        overflow-scrolling: touch;
+    }
+}
+
+/* ==================== HIGH DPI DISPLAYS ==================== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* Thinner borders for retina */
+    .post,
+    .create-post-area,
+    .modal-content {
+        border-width: 0.5px;
+    }
+    
+    /* Sharper shadows */
+    .post {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Crisper text */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+    /* Hide non-essential elements */
+    .sidebar-left,
+    .sidebar-right,
+    .mobile-nav,
+    .create-post-area,
+    .post-interactions,
+    .post-menu,
+    .feed-header,
+    .fab-container {
+        display: none !important;
+    }
+    
+    /* Single column layout */
+    .app-container {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+    }
+    
+    /* Clean borders */
+    .main-feed {
+        border: none;
+        padding: 0;
+    }
+    
+    /* Prevent page breaks in posts */
+    .post {
+        page-break-inside: avoid;
+        border: 1px solid #ccc;
+        margin-bottom: 1rem;
+        box-shadow: none;
+    }
+    
+    /* Black and white */
+    * {
+        color: black !important;
+        background: white !important;
+    }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .orbit-ring,
+    .orbit-item,
+    .hand-left,
+    .hand-right,
+    .live-dot,
+    .loading-spinner {
+        animation: none !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .post,
+    .create-post-area,
+    .modal-content {
+        border-width: 2px;
+    }
+    
+    .interaction-btn,
+    button {
+        border: 2px solid currentColor;
+    }
+    
+    .text-muted {
+        opacity: 1;
+    }
+}
+
+/* Dark Mode Preference */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-mode]) {
+        /* Auto-apply dark mode if no mode is set */
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --text-primary: #f8fafc;
+    }
+}
+
+/* Light Mode Preference */
+@media (prefers-color-scheme: light) {
+    :root:not([data-mode]) {
+        /* Auto-apply light mode if no mode is set */
+        --bg-primary: #e2e8f0;
+        --bg-secondary: #ffffff;
+        --text-primary: #0f172a;
+    }
+}
+
+/* ==================== FOLDABLE DEVICES ==================== */
+@media (min-width: 768px) and (max-width: 1024px) and (min-height: 1024px) {
+    /* iPad Pro and similar tablets in portrait */
+    .app-container {
+        grid-template-columns: 1fr 350px;
+    }
+    
+    .sidebar-left {
+        display: none;
+    }
+    
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Foldable phone support */
+@media (min-width: 280px) and (max-width: 653px) and (min-height: 653px) {
+    /* Galaxy Fold closed */
+    .post {
+        padding: 0.75rem;
+    }
+    
+    .feed-tab {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+@media (min-width: 654px) and (max-width: 884px) and (min-height: 653px) {
+    /* Galaxy Fold open */
+    .app-container {
+        grid-template-columns: 1fr 300px;
+    }
+    
+    .sidebar-left {
+        display: none;
+    }
+}
+
+/* ==================== PERFORMANCE OPTIMIZATIONS ==================== */
+@media (max-width: 768px) {
+    /* Disable expensive effects on mobile */
+    .post::before,
+    .post::after,
+    .game-card::before {
+        display: none;
+    }
+    
+    /* Simpler shadows on mobile */
+    .post:hover,
+    .game-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Disable backdrop blur on low-end devices */
+    @supports not (backdrop-filter: blur(10px)) {
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        
+        .feed-header {
+            background: var(--bg-primary);
+        }
+    }
+}
+
+/* ==================== SAFE AREAS (iPhone X+) ==================== */
+@supports (padding: max(0px)) {
+    .mobile-nav {
+        padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+    }
+    
+    .app-container {
+        padding-bottom: max(60px, env(safe-area-inset-bottom) + 60px);
+    }
+    
+    .modal-content {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
+/* ==================== ENHANCED MOBILE FIXES ==================== */
+/* Add these enhancements to your existing responsive.css file */
+/* These additions fill gaps and improve the mobile experience */
+
+/* Tablet Portrait (768px) - Enhanced */
+@media (max-width: 768px) {
+    /* Ensure full width on mobile */
+    .app-container {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        margin: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    
+    /* Main feed takes full width */
+    .main-feed {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+    }
+    
+    /* Fix create post area to not overflow */
+    .create-post-area {
+        margin: 0.5rem !important;
+        width: calc(100% - 1rem) !important;
+        box-sizing: border-box !important;
+    }
+    
+    .post-composer {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    .composer-content {
+        width: 100% !important;
+        min-width: 0 !important; /* Prevents overflow */
+    }
+    
+    .post-input {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+    
+    /* Fix post actions to wrap properly */
+    .post-actions {
+        width: 100% !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+    
+    .post-options {
+        flex-wrap: wrap !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+    }
+    
+    /* Ensure posts don't overflow */
+    .feed-posts {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 0 !important;
+    }
+    
+    .post {
+        width: calc(100% - 1rem) !important;
+        margin: 0.5rem !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+    
+    .post-content {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+    }
+    
+    /* Fix interaction buttons */
+    .post-interactions {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Fix comment modal to be full screen */
+    #commentModal > div {
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+    }
+    
+    /* Fix any horizontal scrolling issues */
+    body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        position: relative !important;
+    }
+    
+    /* Ensure mobile nav stays at bottom */
+    .mobile-nav {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    
+    /* Hide any desktop-only elements */
+    .desktop-only {
+        display: none !important;
+    }
+    
+    /* Fix feed tabs scrolling */
+    .feed-header {
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    .feed-tabs {
+        padding: 0 0.5rem !important;
+        gap: 0.25rem !important;
+    }
+    
+    /* Orbiting sports animation - simplify on mobile */
+    .orbiting-sports {
+        pointer-events: none !important;
+    }
+    
+    .orbit-ring {
+        animation: none !important;
+    }
+    
+    .orbit-item {
+        display: none !important;
+    }
+    
+    .orbit-center {
+        position: static !important;
+        font-size: 1.25rem !important;
+    }
+}
+
+/* Small Mobile (480px) - Enhanced */
+@media (max-width: 480px) {
+    /* Even more compact spacing */
+    .create-post-area {
+        margin: 0.25rem !important;
+        width: calc(100% - 0.5rem) !important;
+        padding: 0.75rem !important;
+    }
+    
+    .post {
+        width: calc(100% - 0.5rem) !important;
+        margin: 0.25rem !important;
+        padding: 0.75rem !important;
+    }
+    
+    /* Stack post header elements on very small screens */
+    .post-header {
+        flex-wrap: wrap !important;
+    }
+    
+    .post-menu {
+        position: absolute !important;
+        right: 0.5rem !important;
+        top: 0.5rem !important;
+    }
+    
+    /* Smaller text for better fit */
+    .post-content {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Compact prediction cards */
+    .prediction-card,
+    .bet-challenge {
+        padding: 0.5rem !important;
+    }
+    
+    /* Hide less important elements */
+    .nav-badge {
+        display: none !important;
+    }
+    
+    /* Ensure modals work on small screens */
+    .modal-body {
+        padding: 0.75rem !important;
+    }
+}
+
+/* Ultra Small Mobile (360px) - Enhanced */
+@media (max-width: 360px) {
+    /* Maximum space efficiency */
+    .create-post-area,
+    .post {
+        border-radius: 8px !important;
+    }
+    
+    /* Hide avatars in post composer to save space */
+    .composer-avatar {
+        display: none !important;
+    }
+    
+    /* Ultra compact mobile nav */
+    .mobile-nav-item span {
+        font-size: 0.6rem !important;
+    }
+    
+    .mobile-nav-item i {
+        font-size: 1.1rem !important;
+    }
+}
+
+/* Landscape mobile - Enhanced */
+@media (max-width: 812px) and (orientation: landscape) {
+    /* Reduce vertical space usage */
+    .feed-header {
+        position: relative !important; /* Unstick header in landscape */
+    }
+    
+    .create-post-area {
+        margin: 0.25rem !important;
+        padding: 0.5rem !important;
+    }
+    
+    .post {
+        padding: 0.5rem !important;
+        margin: 0.25rem !important;
+    }
+    
+    /* Hide mobile nav text in landscape */
+    .mobile-nav-item span {
+        display: none !important;
+    }
+    
+    .mobile-nav {
+        padding: 0.25rem 0 !important;
+    }
+    
+    .mobile-nav-item {
+        padding: 0.25rem !important;
+    }
+}
+
+/* Fix for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+    /* iOS-specific fixes */
+    .app-container {
+        min-height: -webkit-fill-available !important;
+    }
+    
+    .main-feed {
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Fix iOS input zoom */
+    input, textarea, select {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+}
+
+/* Android-specific fixes */
+@media (max-width: 768px) {
+    /* Ensure proper viewport on Android */
+    html, body {
+        overflow-x: hidden !important;
+        width: 100% !important;
+    }
+    
+    /* Fix Android keyboard issues */
+    .post-input:focus,
+    #commentInput:focus {
+        position: relative !important;
+        z-index: 1 !important;
+    }
+}
+
+/* ==================== TWITTER-STYLE MOBILE LAYOUT ==================== */
+/* Add this to the END of your responsive.css file */
+
+@media (max-width: 768px) {
+    /* Reset the grid to single column */
+    .app-container {
+        display: block !important;
+        position: relative !important;
+        padding: 0 !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Main feed takes full width */
+    .main-feed {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        min-height: 100vh !important;
+        padding-bottom: 60px !important; /* Space for bottom nav */
+    }
+    
+    /* Add mobile header with hamburger and search */
+    .feed-header::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+        z-index: 99;
+    }
+    
+    .feed-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 100 !important;
+        background: var(--bg-primary) !important;
+        border-bottom: 1px solid var(--border) !important;
+        padding: 0 !important;
+    }
+    
+    /* Add hamburger menu button */
+    .feed-header::after {
+        content: '☰';
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        cursor: pointer;
+        z-index: 101;
+        padding: 0.5rem;
+    }
+    
+    /* Add search icon on right */
+    .feed-tabs::after {
+        content: '🔍';
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        cursor: pointer;
+        padding: 0.5rem;
+    }
+    
+    /* Adjust tabs to center */
+    .feed-tabs {
+        padding: 0.75rem 3rem !important; /* Space for hamburger and search */
+        justify-content: center !important;
+        position: relative !important;
+    }
+    
+    /* Push content down for fixed header */
+    .create-post-area {
+        margin-top: 60px !important;
+    }
+    
+    /* LEFT SIDEBAR - Slide from left like Twitter */
+    .sidebar-left {
+        display: block !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: -280px !important; /* Hidden by default */
+        width: 280px !important;
+        height: 100vh !important;
+        background: var(--bg-primary) !important;
+        z-index: 1000 !important;
+        transition: transform 0.3s ease !important;
+        overflow-y: auto !important;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* RIGHT SIDEBAR - Slide from right for search */
+    .sidebar-right {
+        display: block !important;
+        position: fixed !important;
+        top: 0 !important;
+        right: -100% !important; /* Hidden by default */
+        width: 100% !important;
+        height: 100vh !important;
+        background: var(--bg-primary) !important;
+        z-index: 1000 !important;
+        transition: transform 0.3s ease !important;
+        overflow-y: auto !important;
+        padding: 1rem !important;
+    }
+    
+    /* Add close button to right sidebar */
+    .sidebar-right::before {
+        content: '← Back';
+        display: block;
+        padding: 1rem;
+        font-weight: bold;
+        color: var(--primary);
+        cursor: pointer;
+        border-bottom: 1px solid var(--border);
+        margin: -1rem -1rem 1rem -1rem;
+    }
+    
+    /* Invisible checkbox hack for menu toggle (no JS needed!) */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: -100px;
+        width: 50px;
+        height: 50px;
+        z-index: -1;
+    }
+    
+    /* Create invisible checkboxes for menu control */
+    input[type="checkbox"]#mobile-menu-toggle,
+    input[type="checkbox"]#mobile-search-toggle {
+        position: fixed;
+        top: 14px;
+        opacity: 0;
+        z-index: 102;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+    }
+    
+    input[type="checkbox"]#mobile-menu-toggle {
+        left: 8px;
+    }
+    
+    input[type="checkbox"]#mobile-search-toggle {
+        right: 8px;
+    }
+    
+    /* Show left sidebar when checkbox is checked */
+    input[type="checkbox"]#mobile-menu-toggle:checked ~ .app-container .sidebar-left {
+        transform: translateX(280px) !important;
+    }
+    
+    /* Show right sidebar when search is checked */
+    input[type="checkbox"]#mobile-search-toggle:checked ~ .app-container .sidebar-right {
+        transform: translateX(-100%) !important;
+    }
+    
+    /* Dark overlay when menu is open */
+    input[type="checkbox"]#mobile-menu-toggle:checked ~ .app-container::after,
+    input[type="checkbox"]#mobile-search-toggle:checked ~ .app-container::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+    
+    /* Adjust sidebar content for mobile */
+    .logo-section {
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border) !important;
+    }
+    
+    .logo img {
+        width: 150px !important;
+        height: 150px !important;
+        margin: -40px 0 !important;
+    }
+    
+    .nav-item {
+        padding: 1rem 1.5rem !important;
+        font-size: 1.1rem !important;
+    }
+    
+    .nav-item span {
+        display: inline !important;
+    }
+    
+    .user-profile-section {
+        border-top: 1px solid var(--border) !important;
+        margin-top: auto !important;
+    }
+    
+    /* Bottom navigation like Twitter */
+    .mobile-nav {
+        display: flex !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: var(--bg-primary) !important;
+        border-top: 1px solid var(--border) !important;
+        z-index: 100 !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+    
+    /* Clean post layout */
+    .feed-posts {
+        padding: 0 !important;
+    }
+    
+    .post {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+    
+    .create-post-area {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 1rem !important;
+        border-bottom: 1px solid var(--border) !important;
+    }
+    
+    /* Hide desktop create button */
+    .sidebar-left .create-post-btn {
+        display: none !important;
+    }
+}
+
+/* Add the checkboxes to your HTML right after <body> tag: */
+/* 
+<input type="checkbox" id="mobile-menu-toggle" style="display: none;">
+<input type="checkbox" id="mobile-search-toggle" style="display: none;">
+*/
+
+/* Alternative: Pure CSS without checkboxes using :target */
+@media (max-width: 768px) {
+    /* If you can't add checkboxes, use this alternative with anchors */
+    .sidebar-left:target {
+        transform: translateX(280px) !important;
+    }
+    
+    .sidebar-right:target {
+        transform: translateX(-100%) !important;
+    }
+    
+    /* Add IDs to sidebars and use anchor links */
+    /* <a href="#left-menu">☰</a> for menu */
+    /* <a href="#search-panel">🔍</a> for search */
+}
+
+/* Smooth animations */
+@media (max-width: 768px) {
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    .sidebar-left,
+    .sidebar-right {
+        will-change: transform;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+}
+
+/* Fix for iOS elastic scrolling */
+@media (max-width: 768px) {
+    .sidebar-left,
+    .sidebar-right,
+    .main-feed {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    body {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .app-container {
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}

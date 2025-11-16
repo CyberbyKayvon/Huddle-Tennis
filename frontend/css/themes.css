@@ -1,0 +1,532 @@
+﻿:root {
+    /* Primary Colors */
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --primary-alpha: rgba(99, 102, 241, 0.1);
+    
+    /* Accent Colors */
+    --accent: #f59e0b;
+    --accent-light: #fbbf24;
+    --accent-alpha: rgba(245, 158, 11, 0.1);
+    
+    /* Status Colors */
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    --gold: #FFD700;
+    --gold-alpha: rgba(255, 215, 0, 0.1);
+    
+    /* Neutral Colors */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --surface: rgba(30, 41, 59, 0.5);
+    --surface-hover: rgba(51, 65, 85, 0.5);
+    
+    /* Text Colors */
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    
+    /* Borders */
+    --border: rgba(148, 163, 184, 0.1);
+    --border-hover: rgba(148, 163, 184, 0.2);
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.2);
+    --shadow-glow: 0 0 20px var(--primary-alpha);
+}
+
+/* Smooth Theme Transitions */
+* {
+    transition: background-color var(--transition-base), 
+                color var(--transition-base),
+                border-color var(--transition-base);
+}
+
+/* Fast transitions for interactive elements */
+button, a, .nav-item, .post-card, .interaction-btn {
+    transition: all var(--transition-fast);
+}
+
+/* Background Modes - Optimized for Clear Separation */
+[data-mode="dark"] {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #111118;
+    --bg-tertiary: #1a1a2e;
+    --surface: rgba(255, 255, 255, 0.03);
+    --surface-hover: rgba(255, 255, 255, 0.06);
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.12);
+}
+
+[data-mode="light"] {
+    --bg-primary: #e2e8f0;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f8fafc;
+    --surface: #ffffff;
+    --surface-hover: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --border: rgba(15, 23, 42, 0.12);
+    --border-hover: rgba(15, 23, 42, 0.2);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+[data-mode="midnight"] {
+    --bg-primary: #000000;
+    --bg-secondary: #18181b;
+    --bg-tertiary: #27272a;
+    --surface: #18181b;
+    --surface-hover: #27272a;
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    --border: rgba(255, 255, 255, 0.12);
+    --border-hover: rgba(255, 255, 255, 0.2);
+    --shadow-sm: 0 1px 2px rgba(255, 255, 255, 0.05);
+    --shadow-md: 0 4px 6px rgba(255, 255, 255, 0.07);
+}
+
+[data-mode="dim"] {
+    --bg-primary: #15202b;
+    --bg-secondary: #1e2732;
+    --bg-tertiary: #283340;
+    --surface: #1e2732;
+    --surface-hover: #283340;
+    --text-primary: #f7f9fa;
+    --text-secondary: #8b98a5;
+    --text-muted: #71767b;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.12);
+}
+
+/* NFL Team Themes with Enhanced Variables */
+[data-theme="cardinals"] {
+    --primary: #97233F;
+    --primary-dark: #6B1A2D;
+    --primary-light: #B84159;
+    --primary-alpha: rgba(151, 35, 63, 0.1);
+    --accent: #FFB612;
+    --accent-alpha: rgba(255, 182, 18, 0.1);
+    --gradient-primary: linear-gradient(135deg, #97233F 0%, #FFB612 100%);
+    --team-glow: 0 0 30px rgba(151, 35, 63, 0.3);
+}
+
+[data-theme="falcons"] {
+    --primary: #A71930;
+    --primary-dark: #000000;
+    --primary-light: #C73349;
+    --primary-alpha: rgba(167, 25, 48, 0.1);
+    --accent: #A5ACAF;
+    --accent-alpha: rgba(165, 172, 175, 0.1);
+    --gradient-primary: linear-gradient(135deg, #A71930 0%, #A5ACAF 100%);
+    --team-glow: 0 0 30px rgba(167, 25, 48, 0.3);
+}
+
+[data-theme="ravens"] {
+    --primary: #241773;
+    --primary-dark: #000000;
+    --primary-light: #3E2F8D;
+    --primary-alpha: rgba(36, 23, 115, 0.1);
+    --accent: #9E7C0C;
+    --accent-alpha: rgba(158, 124, 12, 0.1);
+    --gradient-primary: linear-gradient(135deg, #241773 0%, #9E7C0C 100%);
+    --team-glow: 0 0 30px rgba(36, 23, 115, 0.3);
+}
+
+[data-theme="bills"] {
+    --primary: #00338D;
+    --primary-dark: #002F6C;
+    --primary-light: #1A4BA7;
+    --primary-alpha: rgba(0, 51, 141, 0.1);
+    --accent: #C60C30;
+    --accent-alpha: rgba(198, 12, 48, 0.1);
+    --gradient-primary: linear-gradient(135deg, #00338D 0%, #C60C30 100%);
+    --team-glow: 0 0 30px rgba(0, 51, 141, 0.3);
+}
+
+[data-theme="panthers"] {
+    --primary: #0085CA;
+    --primary-dark: #101820;
+    --primary-light: #1A9FE4;
+    --primary-alpha: rgba(0, 133, 202, 0.1);
+    --accent: #BFC0BF;
+    --accent-alpha: rgba(191, 192, 191, 0.1);
+    --gradient-primary: linear-gradient(135deg, #0085CA 0%, #BFC0BF 100%);
+    --team-glow: 0 0 30px rgba(0, 133, 202, 0.3);
+}
+
+[data-theme="bears"] {
+    --primary: #0B162A;
+    --primary-dark: #0B162A;
+    --primary-light: #253044;
+    --primary-alpha: rgba(11, 22, 42, 0.1);
+    --accent: #C83803;
+    --accent-alpha: rgba(200, 56, 3, 0.1);
+    --gradient-primary: linear-gradient(135deg, #0B162A 0%, #C83803 100%);
+    --team-glow: 0 0 30px rgba(200, 56, 3, 0.3);
+}
+
+[data-theme="bengals"] {
+    --primary: #FB4F14;
+    --primary-dark: #000000;
+    --primary-light: #FF692E;
+    --primary-alpha: rgba(251, 79, 20, 0.1);
+    --accent: #FB4F14;
+    --accent-alpha: rgba(251, 79, 20, 0.1);
+    --gradient-primary: linear-gradient(135deg, #000000 0%, #FB4F14 100%);
+    --team-glow: 0 0 30px rgba(251, 79, 20, 0.3);
+}
+
+[data-theme="browns"] {
+    --primary: #311D00;
+    --primary-dark: #2A1A00;
+    --primary-light: #4B371A;
+    --primary-alpha: rgba(49, 29, 0, 0.1);
+    --accent: #FF3C00;
+    --accent-alpha: rgba(255, 60, 0, 0.1);
+    --gradient-primary: linear-gradient(135deg, #311D00 0%, #FF3C00 100%);
+    --team-glow: 0 0 30px rgba(255, 60, 0, 0.3);
+}
+
+[data-theme="cowboys"] {
+    --primary: #003594;
+    --primary-dark: #002244;
+    --primary-light: #1A4FAE;
+    --primary-alpha: rgba(0, 53, 148, 0.1);
+    --accent: #869397;
+    --accent-alpha: rgba(134, 147, 151, 0.1);
+    --gradient-primary: linear-gradient(135deg, #003594 0%, #869397 100%);
+    --team-glow: 0 0 30px rgba(0, 53, 148, 0.3);
+}
+
+[data-theme="broncos"] {
+    --primary: #FB4F14;
+    --primary-dark: #002244;
+    --primary-light: #FF692E;
+    --primary-alpha: rgba(251, 79, 20, 0.1);
+    --accent: #FB4F14;
+    --accent-alpha: rgba(251, 79, 20, 0.1);
+    --gradient-primary: linear-gradient(135deg, #002244 0%, #FB4F14 100%);
+    --team-glow: 0 0 30px rgba(251, 79, 20, 0.3);
+}
+
+[data-theme="lions"] {
+    --primary: #0076B6;
+    --primary-dark: #005A8B;
+    --primary-light: #1A90D0;
+    --primary-alpha: rgba(0, 118, 182, 0.1);
+    --accent: #B0B7BC;
+    --accent-alpha: rgba(176, 183, 188, 0.1);
+    --gradient-primary: linear-gradient(135deg, #0076B6 0%, #B0B7BC 100%);
+    --team-glow: 0 0 30px rgba(0, 118, 182, 0.3);
+}
+
+[data-theme="packers"] {
+    --primary: #203731;
+    --primary-dark: #0B5136;
+    --primary-light: #3A514B;
+    --primary-alpha: rgba(32, 55, 49, 0.1);
+    --accent: #FFB612;
+    --accent-alpha: rgba(255, 182, 18, 0.1);
+    --gradient-primary: linear-gradient(135deg, #203731 0%, #FFB612 100%);
+    --team-glow: 0 0 30px rgba(255, 182, 18, 0.3);
+}
+
+[data-theme="texans"] {
+    --primary: #03202F;
+    --primary-dark: #021119;
+    --primary-light: #1D3A49;
+    --primary-alpha: rgba(3, 32, 47, 0.1);
+    --accent: #A71930;
+    --accent-alpha: rgba(167, 25, 48, 0.1);
+    --gradient-primary: linear-gradient(135deg, #03202F 0%, #A71930 100%);
+    --team-glow: 0 0 30px rgba(167, 25, 48, 0.3);
+}
+
+[data-theme="colts"] {
+    --primary: #002C5F;
+    --primary-dark: #001F42;
+    --primary-light: #1A4679;
+    --primary-alpha: rgba(0, 44, 95, 0.1);
+    --accent: #A2AAAD;
+    --accent-alpha: rgba(162, 170, 173, 0.1);
+    --gradient-primary: linear-gradient(135deg, #002C5F 0%, #A2AAAD 100%);
+    --team-glow: 0 0 30px rgba(0, 44, 95, 0.3);
+}
+
+[data-theme="jaguars"] {
+    --primary: #006778;
+    --primary-dark: #004758;
+    --primary-light: #1A8192;
+    --primary-alpha: rgba(0, 103, 120, 0.1);
+    --accent: #D7A22A;
+    --accent-alpha: rgba(215, 162, 42, 0.1);
+    --gradient-primary: linear-gradient(135deg, #006778 0%, #D7A22A 100%);
+    --team-glow: 0 0 30px rgba(0, 103, 120, 0.3);
+}
+
+[data-theme="chiefs"] {
+    --primary: #E31837;
+    --primary-dark: #C8102E;
+    --primary-light: #ED3251;
+    --primary-alpha: rgba(227, 24, 55, 0.1);
+    --accent: #FFB81C;
+    --accent-alpha: rgba(255, 184, 28, 0.1);
+    --gradient-primary: linear-gradient(135deg, #E31837 0%, #FFB81C 100%);
+    --team-glow: 0 0 30px rgba(227, 24, 55, 0.3);
+}
+
+[data-theme="raiders"] {
+    --primary: #000000;
+    --primary-dark: #000000;
+    --primary-light: #1A1A1A;
+    --primary-alpha: rgba(0, 0, 0, 0.1);
+    --accent: #A5ACAF;
+    --accent-alpha: rgba(165, 172, 175, 0.1);
+    --gradient-primary: linear-gradient(135deg, #000000 0%, #A5ACAF 100%);
+    --team-glow: 0 0 30px rgba(165, 172, 175, 0.3);
+}
+
+[data-theme="chargers"] {
+    --primary: #0080C6;
+    --primary-dark: #005A8A;
+    --primary-light: #1A9AE0;
+    --primary-alpha: rgba(0, 128, 198, 0.1);
+    --accent: #FFC20E;
+    --accent-alpha: rgba(255, 194, 14, 0.1);
+    --gradient-primary: linear-gradient(135deg, #0080C6 0%, #FFC20E 100%);
+    --team-glow: 0 0 30px rgba(0, 128, 198, 0.3);
+}
+
+[data-theme="rams"] {
+    --primary: #003594;
+    --primary-dark: #002244;
+    --primary-light: #1A4FAE;
+    --primary-alpha: rgba(0, 53, 148, 0.1);
+    --accent: #FFA300;
+    --accent-alpha: rgba(255, 163, 0, 0.1);
+    --gradient-primary: linear-gradient(135deg, #003594 0%, #FFA300 100%);
+    --team-glow: 0 0 30px rgba(0, 53, 148, 0.3);
+}
+
+[data-theme="dolphins"] {
+    --primary: #008E97;
+    --primary-dark: #005778;
+    --primary-light: #1AA8B1;
+    --primary-alpha: rgba(0, 142, 151, 0.1);
+    --accent: #FC4C02;
+    --accent-alpha: rgba(252, 76, 2, 0.1);
+    --gradient-primary: linear-gradient(135deg, #008E97 0%, #FC4C02 100%);
+    --team-glow: 0 0 30px rgba(0, 142, 151, 0.3);
+}
+
+[data-theme="vikings"] {
+    --primary: #4F2683;
+    --primary-dark: #3B1F5F;
+    --primary-light: #69409D;
+    --primary-alpha: rgba(79, 38, 131, 0.1);
+    --accent: #FFC62F;
+    --accent-alpha: rgba(255, 198, 47, 0.1);
+    --gradient-primary: linear-gradient(135deg, #4F2683 0%, #FFC62F 100%);
+    --team-glow: 0 0 30px rgba(79, 38, 131, 0.3);
+}
+
+[data-theme="patriots"] {
+    --primary: #002244;
+    --primary-dark: #001830;
+    --primary-light: #1A3C5E;
+    --primary-alpha: rgba(0, 34, 68, 0.1);
+    --accent: #C60C30;
+    --accent-alpha: rgba(198, 12, 48, 0.1);
+    --gradient-primary: linear-gradient(135deg, #002244 0%, #C60C30 100%);
+    --team-glow: 0 0 30px rgba(0, 34, 68, 0.3);
+}
+
+[data-theme="saints"] {
+    --primary: #D3BC8D;
+    --primary-dark: #101820;
+    --primary-light: #DDD6A7;
+    --primary-alpha: rgba(211, 188, 141, 0.1);
+    --accent: #D3BC8D;
+    --accent-alpha: rgba(211, 188, 141, 0.1);
+    --gradient-primary: linear-gradient(135deg, #101820 0%, #D3BC8D 100%);
+    --team-glow: 0 0 30px rgba(211, 188, 141, 0.3);
+}
+
+[data-theme="giants"] {
+    --primary: #0B2265;
+    --primary-dark: #041A4B;
+    --primary-light: #253C7F;
+    --primary-alpha: rgba(11, 34, 101, 0.1);
+    --accent: #A71930;
+    --accent-alpha: rgba(167, 25, 48, 0.1);
+    --gradient-primary: linear-gradient(135deg, #0B2265 0%, #A71930 100%);
+    --team-glow: 0 0 30px rgba(11, 34, 101, 0.3);
+}
+
+[data-theme="jets"] {
+    --primary: #125740;
+    --primary-dark: #0C3A2B;
+    --primary-light: #2C715A;
+    --primary-alpha: rgba(18, 87, 64, 0.1);
+    --accent: #FFFFFF;
+    --accent-alpha: rgba(255, 255, 255, 0.1);
+    --gradient-primary: linear-gradient(135deg, #125740 0%, #FFFFFF 100%);
+    --team-glow: 0 0 30px rgba(18, 87, 64, 0.3);
+}
+
+[data-theme="eagles"] {
+    --primary: #004C54;
+    --primary-dark: #003A43;
+    --primary-light: #1A666E;
+    --primary-alpha: rgba(0, 76, 84, 0.1);
+    --accent: #A5ACAF;
+    --accent-alpha: rgba(165, 172, 175, 0.1);
+    --gradient-primary: linear-gradient(135deg, #004C54 0%, #A5ACAF 100%);
+    --team-glow: 0 0 30px rgba(0, 76, 84, 0.3);
+}
+
+[data-theme="steelers"] {
+    --primary: #FFB612;
+    --primary-dark: #101820;
+    --primary-light: #FFD02C;
+    --primary-alpha: rgba(255, 182, 18, 0.1);
+    --accent: #C60C30;
+    --accent-alpha: rgba(198, 12, 48, 0.1);
+    --gradient-primary: linear-gradient(135deg, #101820 0%, #FFB612 100%);
+    --team-glow: 0 0 30px rgba(255, 182, 18, 0.3);
+}
+
+[data-theme="49ers"] {
+    --primary: #AA0000;
+    --primary-dark: #8B0000;
+    --primary-light: #C41A1A;
+    --primary-alpha: rgba(170, 0, 0, 0.1);
+    --accent: #B3995D;
+    --accent-alpha: rgba(179, 153, 93, 0.1);
+    --gradient-primary: linear-gradient(135deg, #AA0000 0%, #B3995D 100%);
+    --team-glow: 0 0 30px rgba(170, 0, 0, 0.3);
+}
+
+[data-theme="seahawks"] {
+    --primary: #002244;
+    --primary-dark: #001830;
+    --primary-light: #1A3C5E;
+    --primary-alpha: rgba(0, 34, 68, 0.1);
+    --accent: #69BE28;
+    --accent-alpha: rgba(105, 190, 40, 0.1);
+    --gradient-primary: linear-gradient(135deg, #002244 0%, #69BE28 100%);
+    --team-glow: 0 0 30px rgba(105, 190, 40, 0.3);
+}
+
+[data-theme="buccaneers"] {
+    --primary: #D50A0A;
+    --primary-dark: #A00808;
+    --primary-light: #EF2424;
+    --primary-alpha: rgba(213, 10, 10, 0.1);
+    --accent: #FF7900;
+    --accent-alpha: rgba(255, 121, 0, 0.1);
+    --gradient-primary: linear-gradient(135deg, #D50A0A 0%, #FF7900 100%);
+    --team-glow: 0 0 30px rgba(213, 10, 10, 0.3);
+}
+
+[data-theme="titans"] {
+    --primary: #0C2340;
+    --primary-dark: #081929;
+    --primary-light: #263D5A;
+    --primary-alpha: rgba(12, 35, 64, 0.1);
+    --accent: #4B92DB;
+    --accent-alpha: rgba(75, 146, 219, 0.1);
+    --gradient-primary: linear-gradient(135deg, #0C2340 0%, #4B92DB 100%);
+    --team-glow: 0 0 30px rgba(75, 146, 219, 0.3);
+}
+
+[data-theme="commanders"] {
+    --primary: #5A1414;
+    --primary-dark: #3F0E0E;
+    --primary-light: #742E2E;
+    --primary-alpha: rgba(90, 20, 20, 0.1);
+    --accent: #FFB612;
+    --accent-alpha: rgba(255, 182, 18, 0.1);
+    --gradient-primary: linear-gradient(135deg, #5A1414 0%, #FFB612 100%);
+    --team-glow: 0 0 30px rgba(90, 20, 20, 0.3);
+}
+
+/* Theme Transition Effects */
+[data-theme-transitioning] * {
+    transition: all var(--transition-slow) !important;
+}
+
+/* Glassmorphism Effect for Cards */
+.glass-effect {
+    background: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+}
+
+/* Team-Specific Hover Effects */
+.team-hover:hover {
+    box-shadow: var(--team-glow);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+/* Animated Gradient Backgrounds */
+.animated-gradient {
+    background: var(--gradient-primary);
+    background-size: 200% 200%;
+    animation: gradientShift 5s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Currency Glow Effect */
+.currency-glow {
+    text-shadow: 0 0 10px var(--gold),
+                 0 0 20px var(--gold-alpha),
+                 0 0 30px var(--gold-alpha);
+}
+
+/* Live Indicator Pulse */
+@keyframes livePulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.5);
+    }
+}
+
+.live-pulse {
+    animation: livePulse 2s ease-in-out infinite;
+}

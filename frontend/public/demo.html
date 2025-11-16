@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huddle Golf - Profile Demo Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, 'SF Pro Display', sans-serif;
+            background: linear-gradient(135deg, #0f4c3a 0%, #1a7350 100%);
+            min-height: 100vh;
+        }
+        
+        .control-panel {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .logo-text h1 {
+            font-size: 24px;
+            color: #1a202c;
+        }
+        
+        .logo-text p {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-top: 4px;
+        }
+        
+        .navigation {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .nav-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .golfer-selector {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            min-width: 250px;
+            transition: border-color 0.3s;
+        }
+        
+        .golfer-selector:hover {
+            border-color: #10b981;
+        }
+        
+        .golfer-selector:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .platform-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .platform-link {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .platform-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .generate-link {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+        
+        .generate-link:hover {
+            transform: translateY(-2px);
+        }
+        
+        .iframe-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .iframe-header {
+            background: linear-gradient(135deg, #f6f6f6, #e9e9e9);
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .iframe-title {
+            font-size: 14px;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .url-display {
+            background: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .page-links {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .page-link {
+            padding: 6px 12px;
+            background: white;
+            color: #4a5568;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+        
+        .page-link:hover {
+            background: #f7fafc;
+        }
+        
+        .page-link.active {
+            background: #10b981;
+            color: white;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+            display: block;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .quick-generate {
+            background: rgba(255, 255, 255, 0.98);
+            margin: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .quick-generate h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .generate-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .generate-btn {
+            padding: 15px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="control-panel">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">⛳</div>
+                <div class="logo-text">
+                    <h1>Huddle Golf Demo</h1>
+                    <p>Junior Golf Recruitment Profiles</p>
+                </div>
+            </div>
+            
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Generated Profiles</div>
+                    <div class="stat-value" id="profileCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pages per Profile</div>
+                    <div class="stat-value">8</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Platform Status</div>
+                    <div class="stat-value">Active</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <div class="nav-section">
+                <span class="nav-label">Select Golfer:</span>
+                <select class="golfer-selector" id="golferSelect" onchange="loadGolfer(this.value)">
+                    <option value="">Choose a golfer profile...</option>
+                </select>
+            </div>
+            
+            <div class="nav-section">
+                <span class="nav-label">Platform Pages:</span>
+                <div class="platform-links">
+                    <a href="/golf-hub" target="_blank" class="platform-link">Golf Hub</a>
+                    <a href="/rankings" target="_blank" class="platform-link">Rankings</a>
+                    <a href="/recruitment" target="_blank" class="platform-link">Recruitment</a>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <a href="/golf-hub" class="generate-link" onclick="openGenerator(); return false;">
+                    <i class="fas fa-plus"></i> Generate New Profile
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="quick-generate">
+        <h3>Quick Generate Test Profiles</h3>
+        <div class="generate-grid">
+            <button class="generate-btn" onclick="quickGenerate('benjamin')">
+                Generate Benjamin Brisson
+            </button>
+            <button class="generate-btn" onclick="quickGenerate('test1')">
+                Generate Test Golfer 1
+            </button>
+            <button class="generate-btn" onclick="quickGenerate('test2')">
+                Generate Test Golfer 2
+            </button>
+            <button class="generate-btn" onclick="quickGenerate('sarah')">
+                Generate Sarah Miller
+            </button>
+            <button class="generate-btn" onclick="quickGenerate('mike')">
+                Generate Mike Johnson
+            </button>
+            <button class="generate-btn" onclick="refreshProfiles()">
+                <i class="fas fa-refresh"></i> Refresh List
+            </button>
+        </div>
+    </div>
+    
+    <div class="iframe-container">
+        <div class="iframe-header">
+            <div class="iframe-title">
+                <span>Preview:</span>
+                <span class="url-display" id="urlDisplay">Select a golfer profile to preview</span>
+            </div>
+            <div class="page-links" id="pageLinks">
+                <!-- Will be populated when a golfer is selected -->
+            </div>
+        </div>
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Select a golfer profile to preview</p>
+        </div>
+        <iframe id="previewFrame" style="display:none;" onload="hideLoading()"></iframe>
+    </div>
+    
+    <script>
+        let currentGolfer = '';
+        let currentPage = 'index';
+        
+        // Load available profiles on page load
+        window.onload = function() {
+            refreshProfiles();
+        };
+        
+        async function refreshProfiles() {
+            try {
+                const response = await fetch('/api/golfer-platforms/list');
+                const data = await response.json();
+                
+                const select = document.getElementById('golferSelect');
+                select.innerHTML = '<option value="">Choose a golfer profile...</option>';
+                
+                if (data.profiles && data.profiles.length > 0) {
+                    data.profiles.forEach(profile => {
+                        const option = document.createElement('option');
+                        option.value = profile.id;
+                        option.textContent = profile.name || profile.id;
+                        select.appendChild(option);
+                    });
+                    
+                    document.getElementById('profileCount').textContent = data.profiles.length;
+                }
+            } catch (error) {
+                console.log('Could not load profiles:', error);
+                // Load from generated-platforms directory listing
+                loadStaticProfiles();
+            }
+        }
+        
+        function loadStaticProfiles() {
+            // For demo purposes, show recent generated profiles
+            const demoProfiles = [
+                { id: 'golfer_demo_benjamin', name: 'Benjamin Brisson' }
+            ];
+            
+            const select = document.getElementById('golferSelect');
+            demoProfiles.forEach(profile => {
+                const option = document.createElement('option');
+                option.value = profile.id;
+                option.textContent = profile.name;
+                select.appendChild(option);
+            });
+            
+            document.getElementById('profileCount').textContent = demoProfiles.length;
+        }
+        
+        function loadGolfer(golferId) {
+            if (!golferId) return;
+            
+            currentGolfer = golferId;
+            showLoading();
+            
+            // Update page links
+            const pageLinks = document.getElementById('pageLinks');
+            pageLinks.innerHTML = `
+                <a href="#" class="page-link active" onclick="loadPage('index'); return false;">Overview</a>
+                <a href="#" class="page-link" onclick="loadPage('tournament-history'); return false;">Tournaments</a>
+                <a href="#" class="page-link" onclick="loadPage('stats-dashboard'); return false;">Stats</a>
+                <a href="#" class="page-link" onclick="loadPage('academic-info'); return false;">Academics</a>
+                <a href="#" class="page-link" onclick="loadPage('contact'); return false;">Contact</a>
+                <a href="#" class="page-link" onclick="loadPage('achievements'); return false;">Achievements</a>
+                <a href="#" class="page-link" onclick="loadPage('highlights'); return false;">Highlights</a>
+                <a href="#" class="page-link" onclick="loadPage('schedule'); return false;">Schedule</a>
+            `;
+            
+            loadPage('index');
+        }
+        
+        function loadPage(page) {
+            if (!currentGolfer) return;
+            
+            currentPage = page;
+            const iframe = document.getElementById('previewFrame');
+            const url = `/golfer/${currentGolfer}/${page}.html`;
+            
+            iframe.src = url;
+            updateUrlDisplay(url);
+            updateActivePageLink(page);
+            showLoading();
+        }
+        
+        function updateUrlDisplay(url) {
+            document.getElementById('urlDisplay').textContent = url;
+        }
+        
+        function updateActivePageLink(page) {
+            document.querySelectorAll('.page-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.textContent.toLowerCase().includes(page.replace('-', ' ').split(' ')[0])) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('previewFrame').style.display = 'none';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('previewFrame').style.display = 'block';
+        }
+        
+        async function quickGenerate(type) {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            
+            try {
+                let golferData = {};
+                
+                if (type === 'benjamin') {
+                    golferData = {
+                        golferName: "Benjamin Brisson",
+                        graduationYear: "2030",
+                        hometown: "Dallas, TX",
+                        age: "12",
+                        scoringAvg: "80.71",
+                        nationalRank: "13",
+                        lowRound: "74",
+                        points2024: "1,190"
+                    };
+                } else {
+                    golferData = {
+                        golferName: "Test Golfer " + Date.now(),
+                        graduationYear: "2026",
+                        hometown: "Test City, ST",
+                        age: "16",
+                        scoringAvg: "72.5",
+                        nationalRank: "50",
+                        lowRound: "69"
+                    };
+                }
+                
+                const response = await fetch('/api/golfer-platforms/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(golferData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Profile generated successfully!');
+                    refreshProfiles();
+                    setTimeout(() => {
+                        document.getElementById('golferSelect').value = result.platformId;
+                        loadGolfer(result.platformId);
+                    }, 500);
+                }
+            } catch (error) {
+                alert('Generation failed: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = btn.innerHTML.replace('Generating...', 'Generate ' + (type === 'benjamin' ? 'Benjamin Brisson' : 'Test Golfer'));
+            }
+        }
+        
+        function openGenerator() {
+            window.open('/golf-hub', '_blank');
+        }
+    </script>
+</body>
+</html>

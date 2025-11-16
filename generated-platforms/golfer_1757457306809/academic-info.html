@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benjamin Brisson - Academic Information</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, 'SF Pro Display', sans-serif;
+            background: #0a0f0d;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        /* Background */
+        .bg-gradient {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0f0d 0%, #0f4c3a 100%);
+            z-index: -1;
+        }
+        
+        /* Navigation */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 15, 13, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+        
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a.active {
+            color: #10b981;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #10b981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+        
+        /* Academic Overview */
+        .academic-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .overview-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .overview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+        }
+        
+        .overview-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .overview-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .overview-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Content Sections */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            animation: fadeIn 0.8s ease 0.4s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .main-section {
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .section-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        /* School Info */
+        .school-info {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border-left: 3px solid #10b981;
+        }
+        
+        .info-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        
+        .info-value {
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* Subjects Grid */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .subject-card {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .subject-card:hover {
+            transform: scale(1.05);
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .subject-grade {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subject-name {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Achievements */
+        .achievements-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .achievement-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .achievement-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10b981;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .goals-section {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+        }
+        
+        .goals-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .goal-item {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border-left: 3px solid #10b981;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Responsive */
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .academic-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    
+    <header class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">⛳ Benjamin Brisson</div>
+            <nav class="nav-links">
+                <a href="index.html">Overview</a>
+                <a href="stats-dashboard.html">Stats</a>
+                <a href="tournament-history.html">Tournaments</a>
+                <a href="academic-info.html" class="active">Academics</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Academic Profile</h1>
+            <p class="page-subtitle">Educational achievements and goals</p>
+        </div>
+        
+        <!-- Academic Overview -->
+        <div class="academic-overview">
+            <div class="overview-card">
+                <div class="overview-icon">📚</div>
+                <div class="overview-value">3.85</div>
+                <div class="overview-label">Current GPA</div>
+            </div>
+            <div class="overview-card">
+                <div class="overview-icon">🏆</div>
+                <div class="overview-value">Top 10%</div>
+                <div class="overview-label">Class Rank</div>
+            </div>
+            <div class="overview-card">
+                <div class="overview-icon">🎓</div>
+                <div class="overview-value">2030</div>
+                <div class="overview-label">Graduation Year</div>
+            </div>
+            <div class="overview-card">
+                <div class="overview-icon">⭐</div>
+                <div class="overview-value">4</div>
+                <div class="overview-label">Honor Rolls</div>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div class="main-section">
+                <!-- School Information -->
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-school"></i>
+                        School Information
+                    </h2>
+                    <div class="school-info">
+                        <div class="info-row">
+                            <span class="info-label">Current School</span>
+                            <span class="info-value">Dallas Academy Prep</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Grade Level</span>
+                            <span class="info-value">7th Grade</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Expected Graduation</span>
+                            <span class="info-value">Class of 2030</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Academic Standing</span>
+                            <span class="info-value">Honor Roll</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Core Subjects -->
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-book"></i>
+                        Core Subjects
+                    </h2>
+                    <div class="subjects-grid">
+                        <div class="subject-card">
+                            <div class="subject-grade">A</div>
+                            <div class="subject-name">Mathematics</div>
+                        </div>
+                        <div class="subject-card">
+                            <div class="subject-grade">A-</div>
+                            <div class="subject-name">Science</div>
+                        </div>
+                        <div class="subject-card">
+                            <div class="subject-grade">A</div>
+                            <div class="subject-name">English</div>
+                        </div>
+                        <div class="subject-card">
+                            <div class="subject-grade">A</div>
+                            <div class="subject-name">History</div>
+                        </div>
+                        <div class="subject-card">
+                            <div class="subject-grade">A</div>
+                            <div class="subject-name">Spanish</div>
+                        </div>
+                        <div class="subject-card">
+                            <div class="subject-grade">A+</div>
+                            <div class="subject-name">Physical Ed</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Academic Achievements -->
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-medal"></i>
+                        Academic Achievements
+                    </h2>
+                    <div class="achievements-list">
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <div>
+                                <strong>Honor Roll</strong> - All Semesters (2023-2025)
+                            </div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div>
+                                <strong>Science Fair Winner</strong> - Regional Competition 2024
+                            </div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div>
+                                <strong>Math Olympiad</strong> - School Representative
+                            </div>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i class="fas fa-running"></i>
+                            </div>
+                            <div>
+                                <strong>Student-Athlete Award</strong> - Excellence in Sports & Academics
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <!-- Academic Goals -->
+                <div class="goals-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-bullseye"></i>
+                        Academic Goals
+                    </h2>
+                    <div class="goals-list">
+                        <div class="goal-item">
+                            Maintain 3.8+ GPA through high school
+                        </div>
+                        <div class="goal-item">
+                            Score 1400+ on SAT (target 2029)
+                        </div>
+                        <div class="goal-item">
+                            AP Courses in Math & Science
+                        </div>
+                        <div class="goal-item">
+                            National Honor Society membership
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Test Prep -->
+                <div class="goals-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-clipboard-check"></i>
+                        Standardized Testing
+                    </h2>
+                    <div class="goals-list">
+                        <div class="goal-item">
+                            <strong>PSAT:</strong> Preparing for 2028
+                        </div>
+                        <div class="goal-item">
+                            <strong>SAT:</strong> Target 2029
+                        </div>
+                        <div class="goal-item">
+                            <strong>Practice Tests:</strong> Above grade level
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Post Interactions</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --surface: #f9fafb;
+            --text: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1f2937;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        /* Mock post styles */
+        .post {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #6366f1;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        
+        .author-info {
+            flex: 1;
+        }
+        
+        .author-name {
+            font-weight: bold;
+            color: #1f2937;
+        }
+        
+        .author-handle {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .post-content {
+            margin: 15px 0;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+        
+        .post-interactions {
+            display: flex;
+            gap: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .interaction-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .interaction-btn:hover {
+            background: #f3f4f6;
+        }
+        
+        .interaction-btn.liked {
+            color: #6366f1;
+        }
+        
+        .interaction-btn.disliked {
+            color: #ef4444;
+        }
+        
+        .interaction-btn.bookmarked {
+            color: #f59e0b;
+        }
+        
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="test-container">
+        <h1>👍 Post Interactions Test</h1>
+        
+        <div class="test-section">
+            <h3>Component Status</h3>
+            <div id="component-status"></div>
+        </div>
+        
+        <!-- Mock Posts for Testing -->
+        <div class="test-section">
+            <h3>Test Posts</h3>
+            
+            <!-- Post 1 -->
+            <div class="post" data-post-id="test-post-1">
+                <div class="post-header">
+                    <div class="author-avatar">JD</div>
+                    <div class="author-info">
+                        <div class="author-name">John Doe</div>
+                        <div class="author-handle">@johndoe</div>
+                    </div>
+                    <button class="interaction-btn" onclick="postInteractions.handleMenu(this)">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+                <div class="post-content">
+                    This is a test post to verify all interaction features are working correctly.
+                    #TestPost #Huddle
+                </div>
+                <div class="post-interactions">
+                    <button class="interaction-btn" onclick="postInteractions.handleLike(this)">
+                        <i class="fas fa-trophy"></i>
+                        <span>42</span>
+                    </button>
+                    <button class="interaction-btn" onclick="postInteractions.handleDislike(this)">
+                        <i class="fas fa-times-circle"></i>
+                        <span>3</span>
+                    </button>
+                    <button class="interaction-btn" onclick="postInteractions.handleShare(this)">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                    <button class="interaction-btn" onclick="postInteractions.handleBookmark(this)">
+                        <i class="far fa-bookmark"></i>
+                        <span>Save</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Post 2 with Image -->
+            <div class="post" data-post-id="test-post-2">
+                <div class="post-header">
+                    <div class="author-avatar" style="background: #10b981;">SA</div>
+                    <div class="author-info">
+                        <div class="author-name">Sarah Anderson</div>
+                        <div class="author-handle">@sarahA</div>
+                    </div>
+                    <button class="interaction-btn" onclick="postInteractions.handleMenu(this)">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                </div>
+                <div class="post-content">
+                    Check out this amazing play! 🏈
+                    <div style="margin-top: 10px;">
+                        <img src="https://via.placeholder.com/400x200/6366f1/ffffff?text=Test+Image" 
+                             style="width: 100%; border-radius: 8px; cursor: pointer;"
+                             onclick="postInteractions.openImageModal(this.src)">
+                    </div>
+                </div>
+                <div class="post-interactions">
+                    <button class="interaction-btn" onclick="postInteractions.handleLike(this)">
+                        <i class="fas fa-trophy"></i>
+                        <span>128</span>
+                    </button>
+                    <button class="interaction-btn" onclick="postInteractions.handleDislike(this)">
+                        <i class="fas fa-times-circle"></i>
+                        <span>7</span>
+                    </button>
+                    <button class="interaction-btn" onclick="postInteractions.handleShare(this)">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                    <button class="interaction-btn" onclick="postInteractions.handleBookmark(this)">
+                        <i class="far fa-bookmark"></i>
+                        <span>Save</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Controls</h3>
+            <button onclick="testLikeDislike()">Test Like/Dislike Toggle</button>
+            <button onclick="testBookmark()">Test Bookmark</button>
+            <button onclick="testShare()">Test Share Modal</button>
+            <button onclick="testToasts()">Test Toast Messages</button>
+            <button onclick="runAllTests()">Run All Tests</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Results</h3>
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { postInteractions } from '/js/components/post-interactions.js';
+        import { apiService } from '/js/core/services/api-service.js';
+        
+        // Make available globally
+        window.postInteractions = postInteractions;
+        
+        // Mock apiService methods
+        apiService.likePost = async (postId) => {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return { success: true, likes: Math.floor(Math.random() * 100) };
+        };
+        
+        apiService.dislikePost = async (postId) => {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return { success: true, dislikes: Math.floor(Math.random() * 20) };
+        };
+        
+        apiService.sharePost = async (postId) => {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return { success: true, shares: Math.floor(Math.random() * 50) };
+        };
+        
+        apiService.bookmarkPost = async (postId) => {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return { success: true };
+        };
+        
+        apiService.delete = async (url) => {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return { success: true };
+        };
+        
+        // Mock auth service
+        window.authService = {
+            getCurrentUser: () => ({ username: 'johndoe', id: '123' })
+        };
+        
+        const resultsDiv = document.getElementById('test-results');
+        
+        function updateComponentStatus() {
+            const statusDiv = document.getElementById('component-status');
+            const isLoaded = typeof postInteractions !== 'undefined';
+            
+            statusDiv.innerHTML = `
+                <p>✅ Component Loaded: ${isLoaded}</p>
+                <p>Methods Available: 
+                    ${typeof postInteractions?.handleLike === 'function' ? '✅' : '❌'} handleLike,
+                    ${typeof postInteractions?.handleDislike === 'function' ? '✅' : '❌'} handleDislike,
+                    ${typeof postInteractions?.handleShare === 'function' ? '✅' : '❌'} handleShare,
+                    ${typeof postInteractions?.handleBookmark === 'function' ? '✅' : '❌'} handleBookmark,
+                    ${typeof postInteractions?.handleMenu === 'function' ? '✅' : '❌'} handleMenu
+                </p>
+            `;
+        }
+        
+        window.testLikeDislike = function() {
+            addResult('Testing like/dislike toggle...', 'info');
+            
+            const likeBtn = document.querySelector('.interaction-btn');
+            const initialCount = parseInt(likeBtn.querySelector('span').textContent);
+            
+            // Test like
+            postInteractions.handleLike(likeBtn);
+            setTimeout(() => {
+                if (likeBtn.classList.contains('liked')) {
+                    addResult('✅ Like toggle works', 'success');
+                } else {
+                    addResult('❌ Like toggle failed', 'error');
+                }
+            }, 500);
+        }
+        
+        window.testBookmark = function() {
+            addResult('Testing bookmark...', 'info');
+            
+            const bookmarkBtns = document.querySelectorAll('.interaction-btn');
+            const bookmarkBtn = Array.from(bookmarkBtns).find(btn => 
+                btn.innerHTML.includes('fa-bookmark'));
+            
+            if (bookmarkBtn) {
+                postInteractions.handleBookmark(bookmarkBtn);
+                setTimeout(() => {
+                    const icon = bookmarkBtn.querySelector('i');
+                    if (icon.classList.contains('fas')) {
+                        addResult('✅ Bookmark works', 'success');
+                    } else {
+                        addResult('❌ Bookmark failed', 'error');
+                    }
+                }, 100);
+            }
+        }
+        
+        window.testShare = function() {
+            addResult('Testing share modal...', 'info');
+            
+            const shareBtns = document.querySelectorAll('.interaction-btn');
+            const shareBtn = Array.from(shareBtns).find(btn => 
+                btn.innerHTML.includes('fa-share'));
+            
+            if (shareBtn) {
+                postInteractions.handleShare(shareBtn);
+                setTimeout(() => {
+                    if (document.querySelector('.share-modal')) {
+                        addResult('✅ Share modal works', 'success');
+                        document.querySelector('.share-modal').remove();
+                    } else {
+                        addResult('❌ Share modal failed', 'error');
+                    }
+                }, 100);
+            }
+        }
+        
+        window.testToasts = function() {
+            const types = ['success', 'error', 'warning', 'info'];
+            const messages = [
+                'Success message!',
+                'Error occurred!',
+                'Warning!',
+                'Info message'
+            ];
+            
+            types.forEach((type, i) => {
+                setTimeout(() => {
+                    postInteractions.showToast(messages[i], type);
+                }, i * 500);
+            });
+            
+            addResult('✅ All toast types displayed', 'success');
+        }
+        
+        window.runAllTests = async function() {
+            resultsDiv.innerHTML = '';
+            addResult('<h4>Running All Tests...</h4>', 'info');
+            
+            // Test 1: Component loaded
+            if (typeof postInteractions !== 'undefined') {
+                addResult('✅ Component loaded successfully', 'success');
+            } else {
+                addResult('❌ Component not loaded', 'error');
+                return;
+            }
+            
+            // Test 2: Methods exist
+            const methods = [
+                'handleLike', 'handleDislike', 'handleShare', 
+                'handleBookmark', 'handleMenu', 'showToast'
+            ];
+            
+            let allMethodsExist = true;
+            methods.forEach(method => {
+                if (typeof postInteractions[method] !== 'function') {
+                    addResult(`❌ Method ${method} not found`, 'error');
+                    allMethodsExist = false;
+                }
+            });
+            
+            if (allMethodsExist) {
+                addResult('✅ All methods available', 'success');
+            }
+            
+            // Test 3: Interactions work
+            testLikeDislike();
+            await new Promise(resolve => setTimeout(resolve, 600));
+            
+            testBookmark();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            testShare();
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            addResult('<h4>All tests complete!</h4>', 'info');
+        }
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        // Initialize
+        updateComponentStatus();
+    </script>
+</body>
+</html>

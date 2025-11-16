@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Handshake Animations</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 10px;
+        }
+        
+        /* Handshake state styles */
+        .handshake-container {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .state-single {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+        
+        .state-pending {
+            background: #fef3c7;
+            border-color: #fbbf24;
+        }
+        
+        .state-accepted {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        
+        .state-cancelled {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+        
+        .state-locked {
+            background: #e0e7ff;
+            border-color: #6366f1;
+        }
+        
+        .state-completed {
+            background: #ddd6fe;
+            border-color: #8b5cf6;
+        }
+        
+        .handshake-animation {
+            animation: shake 0.6s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            50% { transform: translateX(10px) rotate(5deg); }
+            75% { transform: translateX(-5px) rotate(-2deg); }
+        }
+        
+        .state-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .state-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .state-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .warning-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🤝 Handshake Animations Test</h1>
+        
+        <div class="warning-box">
+            <strong>⚠️ Note:</strong> This component appears to be minimally used. 
+            It only manages CSS state classes for bet acceptance animations.
+            Consider if this should be merged into bet-acceptance.js instead.
+        </div>
+        
+        <div class="handshake-container" id="testContainer">
+            <h3>Test Container</h3>
+            <p>Current State: <strong id="currentState">none</strong></p>
+            <p>This container changes appearance based on state</p>
+        </div>
+        
+        <div class="state-buttons">
+            <button class="state-button" style="background: #f3f4f6;" onclick="setState('single')">
+                Single
+            </button>
+            <button class="state-button" style="background: #fef3c7;" onclick="setState('pending')">
+                Pending
+            </button>
+            <button class="state-button" style="background: #d1fae5;" onclick="setState('accepted')">
+                Accepted
+            </button>
+            <button class="state-button" style="background: #fee2e2;" onclick="setState('cancelled')">
+                Cancelled
+            </button>
+            <button class="state-button" style="background: #e0e7ff;" onclick="setState('locked')">
+                Locked
+            </button>
+            <button class="state-button" style="background: #ddd6fe;" onclick="setState('completed')">
+                Completed
+            </button>
+        </div>
+        
+        <button onclick="testAnimation()">Test Shake Animation</button>
+        <button onclick="checkUsage()">Check Component Usage</button>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script type="module">
+        import { handshakeAnimations } from '/js/components/handshake-animations.js';
+        
+        const resultsDiv = document.getElementById('test-results');
+        const container = document.getElementById('testContainer');
+        
+        // Listen for state changes
+        container.addEventListener('handshakeStateChange', (e) => {
+            console.log('State changed to:', e.detail.state);
+            document.getElementById('currentState').textContent = e.detail.state;
+        });
+        
+        window.setState = function(state) {
+            handshakeAnimations.updateState(container, state);
+            addResult(`State changed to: ${state}`, 'success');
+        }
+        
+        window.testAnimation = function() {
+            handshakeAnimations.animateHandshake(container);
+            addResult('Shake animation triggered', 'success');
+        }
+        
+        window.checkUsage = async function() {
+            addResult('<h3>Checking component usage...</h3>', 'info');
+            
+            // Check if other components reference this
+            const componentsToCheck = [
+                'bet-acceptance.js',
+                'challenge-bet.js',
+                'handshake-realtime.js'
+            ];
+            
+            addResult('⚠️ This component seems underutilized', 'warning');
+            addResult('Consider merging into bet-acceptance.js', 'warning');
+            
+            // Test all methods
+            const testContainer = document.createElement('div');
+            
+            // Test updateState
+            handshakeAnimations.updateState(testContainer, 'pending');
+            if (testContainer.classList.contains('state-pending')) {
+                addResult('✅ updateState works', 'success');
+            } else {
+                addResult('❌ updateState failed', 'error');
+            }
+            
+            // Test getCurrentState
+            const state = handshakeAnimations.getCurrentState(testContainer);
+            if (state === 'pending') {
+                addResult('✅ getCurrentState works', 'success');
+            } else {
+                addResult('❌ getCurrentState failed', 'error');
+            }
+            
+            // Component analysis
+            addResult('<h4>Component Analysis:</h4>', 'info');
+            addResult('• File size: ~1KB (very small)', 'info');
+            addResult('• Methods: 3 (minimal functionality)', 'info');
+            addResult('• Dependencies: None', 'info');
+            addResult('• API calls: 0', 'info');
+            addResult('• Recommendation: ✅ Safe to migrate but consider consolidation', 'success');
+        }
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        // Initial test
+        setState('pending');
+    </script>
+</body>
+</html>

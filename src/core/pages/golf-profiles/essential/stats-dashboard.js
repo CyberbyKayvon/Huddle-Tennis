@@ -1,0 +1,529 @@
+// Essential: stats-dashboard
+const BaseGolfProfile = require('../../../base/BaseGolfProfile');
+
+class statsdashboard extends BaseGolfProfile {
+    constructor() {
+        super();
+        this.pageName = 'stats-dashboard';
+    }
+    
+    generateHTML(golferData) {
+        // Benjamin's detailed stats from JGSR
+        const stats = {
+            scoring: {
+                allRounds: '+8.71',
+                average: '80.71',
+                firstRound: '82.50',
+                finalRound: '78.33',
+                front9: '40.71',
+                back9: '40.00'
+            },
+            parBreakers: {
+                overall: '7.9%',
+                par3: '13.79%',
+                par4: '7.35%',
+                par5: '3.45%'
+            },
+            birdies: {
+                total: 10,
+                perRound: 1.43,
+                holesPerBirdie: 12.60
+            },
+            rounds: {
+                total: 7,
+                sub75: 2,
+                sub80: 4,
+                competitive: 7
+            }
+        };
+        
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${golferData.golferName} - Stats Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, 'SF Pro Display', sans-serif;
+            background: #0a0f0d;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        
+        /* Background with subtle animation */
+        .bg-gradient {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0f0d 0%, #0f4c3a 50%, #0a0f0d 100%);
+            background-size: 200% 200%;
+            animation: gradientMove 15s ease infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Navigation */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 15, 13, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+        
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a.active {
+            color: #10b981;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #10b981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+        
+        /* Stats Grid Layout */
+        .stats-container {
+            display: grid;
+            gap: 2rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Primary Stats Cards */
+        .primary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-detail {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Detailed Stats Sections */
+        .detailed-section {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .mini-stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border-left: 3px solid #10b981;
+            transition: all 0.3s;
+        }
+        
+        .mini-stat:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .mini-stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .mini-stat-value {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* Progress Bars */
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        /* Visual Chart */
+        .chart-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .bar-chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 200px;
+            gap: 1rem;
+        }
+        
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #10b981, #34d399);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+            transform: translateY(-5px);
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .primary-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    
+    <header class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">⛳ ${golferData.golferName}</div>
+            <nav class="nav-links">
+                <a href="index.html">Overview</a>
+                <a href="stats-dashboard.html" class="active">Stats</a>
+                <a href="tournament-history.html">Tournaments</a>
+                <a href="academic-info.html">Academics</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Performance Analytics</h1>
+            <p class="page-subtitle">Comprehensive statistical breakdown and trends</p>
+        </div>
+        
+        <div class="stats-container">
+            <!-- Primary Stats Cards -->
+            <div class="primary-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">⛳</div>
+                    <div class="stat-value">${golferData.scoringAvg || '80.71'}</div>
+                    <div class="stat-label">Scoring Average</div>
+                    <div class="stat-detail">7 competitive rounds</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value">${golferData.lowRound || '74'}</div>
+                    <div class="stat-label">Low Round</div>
+                    <div class="stat-detail">Career best score</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-value">#${golferData.nationalRank || '13'}</div>
+                    <div class="stat-label">AAT National Rank</div>
+                    <div class="stat-detail">Boys 12 & Under</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 87%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value">${golferData.totalBirdies || '10'}</div>
+                    <div class="stat-label">Total Birdies</div>
+                    <div class="stat-detail">1.43 per round</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scoring Breakdown -->
+            <div class="detailed-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    Scoring Breakdown
+                </h2>
+                <div class="stats-grid">
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">All Rounds</div>
+                        <div class="mini-stat-value">+8.71</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">First Round Avg</div>
+                        <div class="mini-stat-value">82.50</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">Final Round Avg</div>
+                        <div class="mini-stat-value">78.33</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">Front 9 Avg</div>
+                        <div class="mini-stat-value">40.71</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">Back 9 Avg</div>
+                        <div class="mini-stat-value">40.00</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">Improvement</div>
+                        <div class="mini-stat-value">-4.17</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="bar-chart">
+                        <div class="bar" style="height: 60%">
+                            <span class="bar-value">7.9%</span>
+                            <span class="bar-label">Overall</span>
+                        </div>
+                        <div class="bar" style="height: 85%">
+                            <span class="bar-value">13.79%</span>
+                            <span class="bar-label">Par 3</span>
+                        </div>
+                        <div class="bar" style="height: 55%">
+                            <span class="bar-value">7.35%</span>
+                            <span class="bar-label">Par 4</span>
+                        </div>
+                        <div class="bar" style="height: 30%">
+                            <span class="bar-value">3.45%</span>
+                            <span class="bar-label">Par 5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Par Breakers & Birdies -->
+            <div class="detailed-section">
+                <h2 class="section-title">
+                    <i class="fas fa-trophy"></i>
+                    Birdie Performance
+                </h2>
+                <div class="stats-grid">
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">Par Breakers</div>
+                        <div class="mini-stat-value">${golferData.parBreakers || '7.9%'}</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">Holes Per Birdie</div>
+                        <div class="mini-stat-value">12.60</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">Birdies/Round</div>
+                        <div class="mini-stat-value">1.43</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-label">Best Birdie Round</div>
+                        <div class="mini-stat-value">3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>`;
+    }
+}
+
+module.exports = statsdashboard;
