@@ -23,6 +23,12 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true
     },
+    accountType: {
+        type: String,
+        enum: ['player', 'coach', 'parent'],
+        required: [true, 'Account type is required'],
+        default: 'player'
+    },
     status: {
         type: String,
         enum: ['pending', 'active', 'rejected', 'suspended'],

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Huddle Tennis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #1e3a8a;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .account-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .account-type-btn {
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .account-type-btn:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .account-type-btn.active {
+            border-color: #1e3a8a;
+            background: #eff6ff;
+        }
+
+        .account-type-btn .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .account-type-btn .label {
+            font-weight: 600;
+            color: #1e3a8a;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        .password-hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+        }
+
+        .login-link a {
+            color: #1e3a8a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="logo">
+            <h1>🎾 Huddle Tennis</h1>
+            <p>Create your account</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="signupForm">
+            <div class="account-type-selector">
+                <div class="account-type-btn active" data-type="player">
+                    <div class="icon">🎾</div>
+                    <div class="label">Player</div>
+                </div>
+                <div class="account-type-btn" data-type="coach">
+                    <div class="icon">👨‍🏫</div>
+                    <div class="label">Coach</div>
+                </div>
+            </div>
+
+            <input type="hidden" id="accountType" name="accountType" value="player">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required minlength="3" maxlength="20"
+                       pattern="[a-zA-Z0-9_]+" title="Only letters, numbers, and underscores allowed">
+            </div>
+
+            <div class="form-group">
+                <label for="displayName">Display Name</label>
+                <input type="text" id="displayName" name="displayName" required maxlength="30">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required minlength="6">
+                <div class="password-hint">At least 6 characters</div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="submitBtn">Create Account</button>
+
+            <div class="loading" id="loading">Creating your account...</div>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="/login">Log in</a>
+        </div>
+    </div>
+
+    <script>
+        // Account type selection
+        const accountTypeBtns = document.querySelectorAll('.account-type-btn');
+        const accountTypeInput = document.getElementById('accountType');
+
+        accountTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                accountTypeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                accountTypeInput.value = btn.dataset.type;
+            });
+        });
+
+        // Pre-select account type from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const typeParam = urlParams.get('type');
+        if (typeParam) {
+            const btn = document.querySelector(`[data-type="${typeParam}"]`);
+            if (btn) {
+                accountTypeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                accountTypeInput.value = typeParam;
+            }
+        }
+
+        // Form submission
+        const signupForm = document.getElementById('signupForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Hide messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Get form data
+            const formData = {
+                username: document.getElementById('username').value.trim(),
+                displayName: document.getElementById('displayName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value,
+                accountType: accountTypeInput.value
+            };
+
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Save token and user data
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    // Show success message
+                    successMessage.textContent = 'Account created successfully! Redirecting...';
+                    successMessage.style.display = 'block';
+
+                    // Redirect to tennis hub
+                    setTimeout(() => {
+                        window.location.href = '/tennis-hub';
+                    }, 1500);
+
+                } else {
+                    throw new Error(data.error || 'Registration failed');
+                }
+
+            } catch (error) {
+                console.error('Signup error:', error);
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

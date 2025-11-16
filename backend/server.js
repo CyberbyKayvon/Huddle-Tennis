@@ -138,6 +138,24 @@ class HuddleTennisPlatform {
             }
         });
 
+        this.app.get('/signup', (req, res) => {
+            const signupPath = path.join(__dirname, '../frontend/public/signup.html');
+            if (fs.existsSync(signupPath)) {
+                res.sendFile(signupPath);
+            } else {
+                res.redirect('/');
+            }
+        });
+
+        this.app.get('/login', (req, res) => {
+            const loginPath = path.join(__dirname, '../frontend/public/login.html');
+            if (fs.existsSync(loginPath)) {
+                res.sendFile(loginPath);
+            } else {
+                res.redirect('/');
+            }
+        });
+
         this.app.get('/rankings', (req, res) => {
             const rankingsPath = path.join(__dirname, '../frontend/public/rankings.html');
             if (fs.existsSync(rankingsPath)) {
@@ -173,50 +191,9 @@ class HuddleTennisPlatform {
             this.app.use('/api/tennis', tennisRoutes);
         }
         
-        // Authentication
-        if (fs.existsSync(path.join(__dirname, './routes/auth.routes.js'))) {
-            const authRoutes = require('./routes/auth.routes');
-            this.app.use('/api/auth', authRoutes);
-        } else {
-            // Basic auth endpoints if routes file doesn't exist
-            this.app.post('/api/auth/login', async (req, res) => {
-                try {
-                    const { username, password } = req.body;
-                    // For now, return mock data
-                    res.json({
-                        success: true,
-                        token: 'jwt_token_' + Date.now(),
-                        user: {
-                            id: '1',
-                            username: username,
-                            email: username + '@huddle-tennis.com',
-                            type: 'player'
-                        }
-                    });
-                } catch (error) {
-                    res.status(500).json({ success: false, error: error.message });
-                }
-            });
-            
-            this.app.post('/api/auth/signup', async (req, res) => {
-                try {
-                    const { email, password, username, type } = req.body;
-                    res.json({
-                        success: true,
-                        message: 'Account created successfully!',
-                        token: 'jwt_token_' + Date.now(),
-                        user: {
-                            id: Date.now().toString(),
-                            username: username,
-                            email: email,
-                            type: type || 'player'
-                        }
-                    });
-                } catch (error) {
-                    res.status(500).json({ success: false, error: error.message });
-                }
-            });
-        }
+        // Authentication routes
+        const authRoutes = require('./routes/auth.routes');
+        this.app.use('/api/auth', authRoutes);
         
         // Users
         if (fs.existsSync(path.join(__dirname, './routes/users.js'))) {
